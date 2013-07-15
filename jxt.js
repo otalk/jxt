@@ -13,6 +13,17 @@ var find = exports.find = function (xml, NS, selector) {
     });
 };
 
+exports.findOrCreate = function (xml, NS, selector) {
+    var existing = find(xml, NS, selector);
+    if (existing.length) {
+        return existing[0];
+    } else {
+        var created = document.createElementNS(NS, selector);
+        xml.appendChild(created);
+        return created;
+    }
+};
+
 exports.init = function (self, xml, data) {
     self.xml = xml || document.createElementNS(self.NS, self.EL);
     if (!self.xml.parentNode || self.xml.parentNode.namespaceURI !== self.NS) {
