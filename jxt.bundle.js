@@ -169,8 +169,8 @@ exports.getAttribute = function (xml, attr, defaultVal) {
     return xml.getAttribute(attr) || defaultVal || '';
 };
 
-exports.setAttribute = function (xml, attr, value) {
-    if (value) {
+exports.setAttribute = function (xml, attr, value, force) {
+    if (value || force) {
         xml.setAttribute(attr, value);
     } else {
         xml.removeAttribute(attr);
