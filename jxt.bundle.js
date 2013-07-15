@@ -265,7 +265,17 @@ exports.toJSON = function () {
     for (prop in this) {
         if (!exclude[prop] && !((LOOKUP_EXT[this.NS + '|' + this.EL] || {})[prop]) && !this._extensions[prop] && prop[0] !== '_') {
             var val = this[prop];
-            if (typeof val != 'function' && ((typeof val == 'object' && Object.keys(val).length > 0) || (typeof val != 'object' && !!val))) {
+            if (typeof val == 'function') continue;
+            var type = Object.prototype.toString.call(val);
+            if (type.indexOf('Object') >= 0) {
+                if (Object.keys(val).length > 0) {
+                    result[prop] = val;
+                }
+            } else if (type.indexOf('Array') >= 0) {
+                if (val.length > 0) {
+                    result[prop] = val;
+                }
+            } else if (!!val) {
                 result[prop] = val;
             }
         }
