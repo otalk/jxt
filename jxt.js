@@ -15,7 +15,9 @@ var find = exports.find = function (xml, NS, selector) {
 
 exports.init = function (self, xml, data) {
     self.xml = xml || document.createElementNS(self.NS, self.EL);
-    self.xml.setAttribute('xmlns', self.NS);
+    if (!self.xml.parentNode || self.xml.parentNode.namespaceURI !== self.NS) {
+        self.xml.setAttribute('xmlns', self.NS);
+    }
 
     self._extensions = {};
     _.each(self.xml.childNodes, function (child) {
@@ -168,6 +170,19 @@ exports.getAttribute = function (xml, attr, defaultVal) {
 exports.setAttribute = function (xml, attr, value) {
     if (value) {
         xml.setAttribute(attr, value);
+    } else {
+        xml.removeAttribute(attr);
+    }
+};
+
+exports.getBoolAttribute = function (xml, attr, defaultVal) {
+    var val = xml.getAttribute(attr) || defaultVal || '';
+    return val === 'true' || val === '1';
+};
+
+exports.setBoolAttribute = function (xml, attr, value) {
+    if (value) {
+        xml.setAttribute(attr, '1');
     } else {
         xml.removeAttribute(attr);
     }
