@@ -252,9 +252,9 @@ exports.toJSON = function () {
         }
     }
     for (prop in this) {
-        if (!exclude[prop] && !LOOKUP_EXT[prop] && !this._extensions[prop] && prop[0] !== '_') {
+        if (!exclude[prop] && !((LOOKUP_EXT[this.NS + '|' + this.EL] || {})[prop]) && !this._extensions[prop] && prop[0] !== '_') {
             var val = this[prop];
-            if (typeof val != 'function' && ((typeof val == 'object' && Object.keys(val).length > 0) || !!val)) {
+            if (typeof val != 'function' && ((typeof val == 'object' && Object.keys(val).length > 0) || (typeof val != 'object' && !!val))) {
                 result[prop] = val;
             }
         }
@@ -263,11 +263,18 @@ exports.toJSON = function () {
 };
 
 exports.extend = function (ParentJXT, ChildJXT) {
+    var parentName = ParentJXT.prototype.NS + '|' + ParentJXT.prototype.EL;
     var name = ChildJXT.prototype._name;
     var qName = ChildJXT.prototype.NS + '|' + ChildJXT.prototype.EL;
 
     LOOKUP[qName] = ChildJXT;
-    LOOKUP_EXT[name] = ChildJXT;
+    if (!LOOKUP_EXT[qName]) {
+        LOOKUP_EXT[qName] = {};
+    }
+    if (!LOOKUP_EXT[parentName]) {
+        LOOKUP_EXT[parentName] = {};
+    }
+    LOOKUP_EXT[parentName][name] = ChildJXT;
 
     ParentJXT.prototype.__defineGetter__(name, function () {
         if (!this._extensions[name]) {
