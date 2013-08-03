@@ -1,4 +1,4 @@
-var _ = require('lodash');
+var _ = require('./vendor/lodash');
 var serializer = new XMLSerializer();
 var XML_NS = 'http://www.w3.org/XML/1998/namespace';
 var TOP_LEVEL_LOOKUP = {};
