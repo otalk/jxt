@@ -1,31 +1,34 @@
 {
-  "name": "jxt",
-  "version": "0.0.7",
-  "description": "JSON/XML Translator. Set/retrieve data from XML just like working with a dictionary.",
-  "main": "jxt.js",
-  "browserify": "jxt.js",
-  "dependencies": {},
-  "devDependencies": {
-      "precommit-hook": "0.3.4",
-      "browserify": "2.18.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/legastero/jxt.git"
-  },
-  "bugs": "https://github.com/legastero/jxt/issues",
-  "keywords": [
-    "JXT",
-    "JSON",
-    "XML",
-    "translation",
-    "stanza.io"
-  ],
-  "contributors": [
-    "Lance Stout <lance@andyet.net>"
-  ],
-  "license": "MIT",
-  "scripts": {
-      "build": "node build.js"
-  }
+    "name": "jxt",
+    "version": "0.1.0",
+    "description": "JSON/XML Translator. Set/retrieve data from XML just like working with a dictionary.",
+    "main": "jxt.js",
+    "browserify": "jxt.js",
+    "dependencies": {
+        "lodash": ""
+    },
+    "devDependencies": {
+        "precommit-hook": "0.3.4",
+        "browserify": "2.18.1",
+        "tape": ""
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/legastero/jxt.git"
+    },
+    "bugs": "https://github.com/legastero/jxt/issues",
+    "keywords": [
+        "JXT",
+        "JSON",
+        "XML",
+        "translation",
+        "stanza.io"
+    ],
+    "contributors": [
+        "Lance Stout <lance@andyet.net>"
+    ],
+    "license": "MIT",
+    "scripts": {
+        "build": "node build.js"
+    }
 }

@@ -1,6 +1,6 @@
-var bundle = require('browserify')(),
-    fs = require('fs');
+var bundle = require('browserify')();
+var fs = require('fs');
 
 
-bundle.add('./jxt');
+bundle.add('./index');
 bundle.bundle({standalone: 'jxt'}).pipe(fs.createWriteStream('jxt.bundle.js'));
