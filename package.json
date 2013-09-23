@@ -16,6 +16,20 @@
         "type": "git",
         "url": "https://github.com/legastero/jxt.git"
     },
+    "testling": {
+        "files": [
+            "test/helpers.js",
+            "test/types.js"
+        ],
+        "browsers": [
+            "ie/10..latest",
+            "chrome/20..latest",
+            "firefox/10..latest",
+            "safari/6..latest",
+            "iphone/6..latest",
+            "ipad/6..latest"
+        ]
+    },
     "bugs": "https://github.com/legastero/jxt/issues",
     "keywords": [
         "JXT",
