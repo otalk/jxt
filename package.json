@@ -1,16 +1,16 @@
 {
     "name": "jxt",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "JSON/XML Translator. Set/retrieve data from XML just like working with a dictionary.",
     "main": "jxt.js",
     "browserify": "jxt.js",
     "dependencies": {
-        "lodash": ""
+        "lodash": "2.1.0"
     },
     "devDependencies": {
         "precommit-hook": "0.3.4",
         "browserify": "2.18.1",
-        "tape": ""
+        "tape": "1.1.1"
     },
     "repository": {
         "type": "git",
