@@ -18,8 +18,7 @@
     },
     "testling": {
         "files": [
-            "test/helpers.js",
-            "test/types.js"
+            "test/test.js"
         ],
         "browsers": [
             "ie/10..latest",
