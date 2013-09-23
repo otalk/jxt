@@ -9,444 +9,7 @@ var types = require('./lib/types');
 
 module.exports = _.extend({}, core, helpers, types);
 
-},{"./lib/core":2,"./lib/helpers":3,"./lib/types":4,"lodash":5}],2:[function(require,module,exports){
-"use strict";
-
-var _ = require('lodash');
-var find = require('./helpers').find;
-
-var serializer = new XMLSerializer();
-
-var LOOKUP = {};
-var LOOKUP_EXT = {};
-var TOP_LEVEL_LOOKUP = {};
-
-
-exports.build = function (xml) {
-    var JXT = TOP_LEVEL_LOOKUP[xml.namespaceURI + '|' + xml.localName];
-    if (JXT) {
-        return new JXT(null, xml);
-    }
-};
-
-exports.extend = function (ParentJXT, ChildJXT) {
-    var parentName = ParentJXT.prototype._NS + '|' + ParentJXT.prototype._EL;
-    var name = ChildJXT.prototype._name;
-    var qName = ChildJXT.prototype._NS + '|' + ChildJXT.prototype._EL;
-
-    LOOKUP[qName] = ChildJXT;
-    if (!LOOKUP_EXT[qName]) {
-        LOOKUP_EXT[qName] = {};
-    }
-    if (!LOOKUP_EXT[parentName]) {
-        LOOKUP_EXT[parentName] = {};
-    }
-    LOOKUP_EXT[parentName][name] = ChildJXT;
-
-    ParentJXT.prototype.__defineGetter__(name, function () {
-        if (!this._extensions[name]) {
-            var existing = find(this.xml, ChildJXT.prototype._NS, ChildJXT.prototype._EL);
-            if (!existing.length) {
-                this._extensions[name] = new ChildJXT();
-                this.xml.appendChild(this._extensions[name].xml);
-            } else {
-                this._extensions[name] = new ChildJXT(null, existing[0]);
-            }
-            this._extensions[name].parent = this;
-        }
-        return this._extensions[name];
-    });
-    ParentJXT.prototype.__defineSetter__(name, function (value) {
-        var child = this[name];
-        _.extend(child, value);
-    });
-};
-
-exports.define = function (opts, fields) {
-    var StanzaConstructor = function (data, xml) {
-        var self = this;
-
-        self.xml = xml || document.createElementNS(self._NS, self._EL);
-        if (!self.xml.parentNode || self.xml.parentNode.namespaceURI !== self._NS) {
-            self.xml.setAttribute('xmlns', self._NS);
-        }
-
-        self._extensions = {};
-
-        _.each(self.xml.childNodes, function (child) {
-            var childName = child.namespaceURI + '|' + child.localName;
-            var ChildJXT = LOOKUP[childName];
-            if (ChildJXT !== undefined) {
-                var name = ChildJXT.prototype._name;
-                self._extensions[name] = new ChildJXT(null, child);
-                self._extensions[name].parent = self;
-            }
-        });
-
-        _.extend(self, data);
-
-        return self;
-    };
-
-    StanzaConstructor.prototype = {
-        constructor: {
-            value: StanzaConstructor
-        },
-        _name: opts.name,
-        _eventname: opts.eventName,
-        _NS: opts.namespace,
-        _EL: opts.element,
-        toString: toString,
-        toJSON: toJSON
-    };
-
-    var fieldNames = Object.keys(fields);
-    fieldNames.forEach(function (fieldName) {
-        var field = fields[fieldName];
-
-        if (field.get) {
-            StanzaConstructor.prototype.__defineGetter__(fieldName, field.get);
-        }
-        if (field.set) {
-            StanzaConstructor.prototype.__defineSetter__(fieldName, field.set);
-        }
-    });
-
-    if (opts.topLevel) {
-        topLevel(StanzaConstructor);
-    }
-
-    return StanzaConstructor;
-};
-
-
-function topLevel(JXT) {
-    var name = JXT.prototype._NS + '|' + JXT.prototype._EL;
-    LOOKUP[name] = JXT;
-    TOP_LEVEL_LOOKUP[name] = JXT;
-}
-
-function toString() {
-    return serializer.serializeToString(this.xml);
-}
-
-function toJSON() {
-    var prop;
-    var result = {};
-    var exclude = {
-        constructor: true,
-        _EL: true,
-        _NS: true,
-        _extensions: true,
-        _name: true,
-        parent: true,
-        prototype: true,
-        toJSON: true,
-        toString: true,
-        xml: true
-    };
-
-    for (prop in this._extensions) {
-        if (this._extensions[prop].toJSON) {
-            result[prop] = this._extensions[prop].toJSON();
-        }
-    }
-
-    for (prop in this) {
-        if (!exclude[prop] && !((LOOKUP_EXT[this._NS + '|' + this._EL] || {})[prop]) && !this._extensions[prop] && prop[0] !== '_') {
-            var val = this[prop];
-            if (typeof val == 'function') continue;
-            var type = Object.prototype.toString.call(val);
-            if (type.indexOf('Object') >= 0) {
-                if (Object.keys(val).length > 0) {
-                    result[prop] = val;
-                }
-            } else if (type.indexOf('Array') >= 0) {
-                if (val.length > 0) {
-                    result[prop] = val;
-                }
-            } else if (!!val) {
-                result[prop] = val;
-            }
-        }
-    }
-
-    return result;
-}
-
-},{"./helpers":3,"lodash":5}],3:[function(require,module,exports){
-"use strict";
-
-var _ = require('lodash');
-var XML_NS = 'http://www.w3.org/XML/1998/namespace';
-
-
-exports.getParser = function () {
-    return new DOMParser();
-};
-
-exports.createElement = function (NS, name) {
-    return document.createElement(NS, name);
-};
-
-var find = exports.find = function (xml, NS, selector) {
-    var children = xml.querySelectorAll(selector);
-    return _.filter(children, function (child) {
-        return child.namespaceURI === NS && child.parentNode == xml;
-    });
-};
-
-exports.findOrCreate = function (xml, NS, selector) {
-    var existing = exports.find(xml, NS, selector);
-    if (existing.length) {
-        return existing[0];
-    } else {
-        var created = document.createElementNS(NS, selector);
-        xml.appendChild(created);
-        return created;
-    }
-};
-
-exports.getAttribute = function (xml, attr, defaultVal) {
-    return xml.getAttribute(attr) || defaultVal || '';
-};
-
-exports.setAttribute = function (xml, attr, value, force) {
-    if (value || force) {
-        xml.setAttribute(attr, value);
-    } else {
-        xml.removeAttribute(attr);
-    }
-};
-
-exports.getBoolAttribute = function (xml, attr, defaultVal) {
-    var val = xml.getAttribute(attr) || defaultVal || '';
-    return val === 'true' || val === '1';
-};
-
-exports.setBoolAttribute = function (xml, attr, value) {
-    if (value) {
-        xml.setAttribute(attr, '1');
-    } else {
-        xml.removeAttribute(attr);
-    }
-};
-
-exports.getSubAttribute = function (xml, NS, sub, attr, defaultVal) {
-    var subs = find(xml, NS, sub);
-    if (!subs) {
-        return '';
-    }
-
-    for (var i = 0; i < subs.length; i++) {
-        if (subs[i].namespaceURI === NS) {
-            return subs[i].getAttribute(attr) || defaultVal || '';
-        }
-    }
-
-    return '';
-};
-
-exports.setSubAttribute = function (xml, NS, sub, attr, value) {
-    var subs = find(xml, NS, sub);
-    if (!subs.length) {
-        if (value) {
-            sub = document.createElementNS(NS, sub);
-            sub.setAttribute(attr, value);
-            xml.appendChild(sub);
-        }
-    } else {
-        for (var i = 0; i < subs.length; i++) {
-            if (subs[i].namespaceURI === NS) {
-                if (value) {
-                    subs[i].setAttribute(attr, value);
-                    return;
-                } else {
-                    subs[i].removeAttribute(attr);
-                }
-            }
-        }
-    }
-};
-
-exports.getText = function (xml) {
-    return xml.textContent;
-};
-
-exports.setText = function (xml, value) {
-    xml.textContent = value;
-};
-
-exports.getSubText = function (xml, NS, element, defaultVal) {
-    var subs = find(xml, NS, element);
-
-    defaultVal = defaultVal || '';
-
-    if (!subs) {
-        return defaultVal;
-    }
-
-    for (var i = 0; i < subs.length; i++) {
-        if (subs[i].namespaceURI === NS) {
-            return subs[i].textContent || defaultVal;
-        }
-    }
-
-    return defaultVal;
-};
-
-exports.setSubText = function (xml, NS, element, value) {
-    var subs = find(xml, NS, element);
-    if (!subs.length) {
-        if (value) {
-            var sub = document.createElementNS(NS, element);
-            sub.textContent = value;
-            xml.appendChild(sub);
-        }
-    } else {
-        for (var i = 0; i < subs.length; i++) {
-            if (subs[i].namespaceURI === NS) {
-                if (value) {
-                    subs[i].textContent = value;
-                    return;
-                } else {
-                    xml.removeChild(subs[i]);
-                }
-            }
-        }
-    }
-};
-
-exports.getMultiSubText = function (xml, NS, element, extractor) {
-    var subs = find(xml, NS, element);
-    var results = [];
-
-    extractor = extractor || function (sub) {
-        return sub.textContent || '';
-    };
-
-    for (var i = 0; i < subs.length; i++) {
-        if (subs[i].namespaceURI === NS) {
-            results.push(extractor(subs[i]));
-        }
-    }
-
-    return results;
-};
-
-exports.setMultiSubText = function (xml, NS, element, value, builder) {
-    var subs = find(xml, NS, element);
-    var values = [];
-    builder = builder || function (value) {
-        var sub = document.createElementNS(NS, element);
-        sub.textContent = value;
-        xml.appendChild(sub);
-    };
-    if (typeof value === 'string') {
-        values = (value || '').split('\n');
-    } else {
-        values = value;
-    }
-    _.forEach(subs, function (sub) {
-        xml.removeChild(sub);
-    });
-    _.forEach(values, function (val) {
-        if (val) {
-            builder(val);
-        }
-    });
-};
-
-exports.getSubLangText = function (xml, NS, element, defaultLang) {
-    var subs = find(xml, NS, element);
-    if (!subs) {
-        return {};
-    }
-
-    var lang, sub;
-    var results = {};
-    var langs = [];
-
-    for (var i = 0; i < subs.length; i++) {
-        sub = subs[i];
-        if (sub.namespaceURI === NS) {
-            lang = sub.getAttributeNS(XML_NS, 'lang') || defaultLang;
-            langs.push(lang);
-            results[lang] = sub.textContent || '';
-        }
-    }
-
-    return results;
-};
-
-exports.setSubLangText = function (xml, NS, element, value, defaultLang) {
-    var sub, lang;
-    var subs = find(xml, NS, element);
-    if (subs.length) {
-        for (var i = 0; i < subs.length; i++) {
-            sub = subs[i];
-            if (sub.namespaceURI === NS) {
-                xml.removeChild(sub);
-            }
-        }
-    }
-
-    if (typeof value === 'string') {
-        sub = document.createElementNS(NS, element);
-        sub.textContent = value;
-        xml.appendChild(sub);
-    } else if (typeof value === 'object') {
-        for (lang in value) {
-            if (value.hasOwnProperty(lang)) {
-                sub = document.createElementNS(NS, element);
-                if (lang !== defaultLang) {
-                    sub.setAttributeNS(XML_NS, 'lang', lang);
-                }
-                sub.textContent = value[lang];
-                xml.appendChild(sub);
-            }
-        }
-    }
-};
-
-},{"lodash":5}],4:[function(require,module,exports){
-"use strict";
-
-var _ = require('lodash');
-var helpers = require('./helpers');
-
-
-function field(getter, setter) {
-    return function () {
-        var args = _.toArray(arguments);
-        return {
-            get: function () {
-                return getter.apply(null, [this.xml].concat(args));
-            },
-            set: function (value) {
-                setter.apply(null, ([this.xml].concat(args)).concat([value]));
-            }
-        };
-    };
-}
-
-exports.field = field;
-exports.attribute = field(helpers.getAttribute,
-                          helpers.setAttribute);
-exports.boolAttribute = field(helpers.getBoolAttribute,
-                              helpers.setBoolAttribute);
-exports.subAttribute = field(helpers.getSubAttribute,
-                             helpers.setSubAttribute);
-exports.text = field(helpers.getText,
-                     helpers.setText);
-exports.subText = field(helpers.getSubText,
-                        helpers.setSubText);
-exports.multiSubText = field(helpers.getMultiSubText,
-                             helpers.setMultiSubText);
-exports.subLangText = field(helpers.getSubLangText,
-                            helpers.setSubLangText);
-
-},{"./helpers":3,"lodash":5}],5:[function(require,module,exports){
+},{"./lib/core":2,"./lib/helpers":3,"./lib/types":4,"lodash":5}],5:[function(require,module,exports){
 (function(global){/**
  * @license
  * Lo-Dash 1.3.1 (Custom Build) <http://lodash.com/>
@@ -6004,6 +5567,491 @@ exports.subLangText = field(helpers.getSubLangText,
 }(this));
 
 })(window)
-},{}]},{},[1])(1)
+},{}],2:[function(require,module,exports){
+"use strict";
+
+var _ = require('lodash');
+var find = require('./helpers').find;
+var types = require('./types');
+
+var serializer = new XMLSerializer();
+
+var LOOKUP = {};
+var LOOKUP_EXT = {};
+var TOP_LEVEL_LOOKUP = {};
+
+
+function topLevel(JXT) {
+    var name = JXT.prototype._NS + '|' + JXT.prototype._EL;
+    LOOKUP[name] = JXT;
+    TOP_LEVEL_LOOKUP[name] = JXT;
+}
+
+function toString(xml) {
+    return serializer.serializeToString(xml);
+}
+
+function toJSON(jxt) {
+    var prop;
+    var result = {};
+    var exclude = {
+        constructor: true,
+        _EL: true,
+        _NS: true,
+        _extensions: true,
+        _name: true,
+        parent: true,
+        prototype: true,
+        toJSON: true,
+        toString: true,
+        xml: true
+    };
+
+    for (prop in jxt._extensions) {
+        if (jxt._extensions[prop].toJSON) {
+            result[prop] = jxt._extensions[prop].toJSON();
+        }
+    }
+
+    for (prop in jxt) {
+        if (!exclude[prop] && !((LOOKUP_EXT[jxt._NS + '|' + jxt._EL] || {})[prop]) && !jxt._extensions[prop] && prop[0] !== '_') {
+            var val = jxt[prop];
+            if (typeof val == 'function') continue;
+            var type = Object.prototype.toString.call(val);
+            if (type.indexOf('Object') >= 0) {
+                if (Object.keys(val).length > 0) {
+                    result[prop] = val;
+                }
+            } else if (type.indexOf('Array') >= 0) {
+                if (val.length > 0) {
+                    result[prop] = val;
+                }
+            } else if (!!val) {
+                result[prop] = val;
+            }
+        }
+    }
+
+    return result;
+}
+
+
+exports.build = function (xml) {
+    var JXT = TOP_LEVEL_LOOKUP[xml.namespaceURI + '|' + xml.localName];
+    if (JXT) {
+        return new JXT(null, xml);
+    }
+};
+
+exports.extend = function (ParentJXT, ChildJXT, multiName) {
+    var parentName = ParentJXT.prototype._NS + '|' + ParentJXT.prototype._EL;
+    var name = ChildJXT.prototype._name;
+    var qName = ChildJXT.prototype._NS + '|' + ChildJXT.prototype._EL;
+
+    LOOKUP[qName] = ChildJXT;
+    if (!LOOKUP_EXT[qName]) {
+        LOOKUP_EXT[qName] = {};
+    }
+    if (!LOOKUP_EXT[parentName]) {
+        LOOKUP_EXT[parentName] = {};
+    }
+    LOOKUP_EXT[parentName][name] = ChildJXT;
+
+    exports.add(ParentJXT, name, types.extension(ChildJXT));
+    if (multiName) {
+        exports.add(ParentJXT, multiName, types.multiExtension(ChildJXT));
+    }
+};
+
+exports.add = function (ParentJXT, fieldName, field) {
+    if (field.get) {
+        ParentJXT.prototype.__defineGetter__(fieldName, field.get);
+    }
+    if (field.set) {
+        ParentJXT.prototype.__defineSetter__(fieldName, field.set);
+    }
+};
+
+exports.define = function (opts) {
+    var StanzaConstructor = function (data, xml) {
+        var self = this;
+
+        self.xml = xml || document.createElementNS(self._NS, self._EL);
+        if (!self.xml.parentNode || self.xml.parentNode.namespaceURI !== self._NS) {
+            self.xml.setAttribute('xmlns', self._NS);
+        }
+
+        self._extensions = {};
+
+        _.each(self.xml.childNodes, function (child) {
+            var childName = child.namespaceURI + '|' + child.localName;
+            var ChildJXT = LOOKUP[childName];
+            if (ChildJXT !== undefined) {
+                var name = ChildJXT.prototype._name;
+                self._extensions[name] = new ChildJXT(null, child);
+                self._extensions[name].parent = self;
+            }
+        });
+
+        _.extend(self, data);
+
+        return self;
+    };
+
+    StanzaConstructor.prototype = {
+        constructor: {
+            value: StanzaConstructor
+        },
+        _name: opts.name,
+        _eventname: opts.eventName,
+        _NS: opts.namespace,
+        _EL: opts.element,
+        toString: function () { return toString(this.xml); },
+        toJSON: function () { return toJSON(this); }
+    };
+
+    var fieldNames = Object.keys(opts.fields || {});
+    fieldNames.forEach(function (fieldName) {
+        exports.add(StanzaConstructor, fieldName, opts.fields[fieldName]);
+    });
+
+    if (opts.topLevel) {
+        topLevel(StanzaConstructor);
+    }
+
+    return StanzaConstructor;
+};
+
+},{"./helpers":3,"./types":4,"lodash":5}],3:[function(require,module,exports){
+"use strict";
+
+var _ = require('lodash');
+var XML_NS = 'http://www.w3.org/XML/1998/namespace';
+
+
+exports.getParser = function () {
+    return new DOMParser();
+};
+
+exports.createElement = function (NS, name) {
+    return document.createElement(NS, name);
+};
+
+var find = exports.find = function (xml, NS, selector) {
+    var children = xml.querySelectorAll(selector);
+    return _.filter(children, function (child) {
+        return child.namespaceURI === NS && child.parentNode == xml;
+    });
+};
+
+exports.findOrCreate = function (xml, NS, selector) {
+    var existing = exports.find(xml, NS, selector);
+    if (existing.length) {
+        return existing[0];
+    } else {
+        var created = document.createElementNS(NS, selector);
+        xml.appendChild(created);
+        return created;
+    }
+};
+
+exports.getAttribute = function (xml, attr, defaultVal) {
+    return xml.getAttribute(attr) || defaultVal || '';
+};
+
+exports.setAttribute = function (xml, attr, value, force) {
+    if (value || force) {
+        xml.setAttribute(attr, value);
+    } else {
+        xml.removeAttribute(attr);
+    }
+};
+
+exports.getBoolAttribute = function (xml, attr, defaultVal) {
+    var val = xml.getAttribute(attr) || defaultVal || '';
+    return val === 'true' || val === '1';
+};
+
+exports.setBoolAttribute = function (xml, attr, value) {
+    if (value) {
+        xml.setAttribute(attr, '1');
+    } else {
+        xml.removeAttribute(attr);
+    }
+};
+
+exports.getSubAttribute = function (xml, NS, sub, attr, defaultVal) {
+    var subs = find(xml, NS, sub);
+    if (!subs) {
+        return '';
+    }
+
+    for (var i = 0; i < subs.length; i++) {
+        return subs[i].getAttribute(attr) || defaultVal || '';
+    }
+
+    return '';
+};
+
+exports.setSubAttribute = function (xml, NS, sub, attr, value) {
+    var subs = find(xml, NS, sub);
+    if (!subs.length) {
+        if (value) {
+            sub = document.createElementNS(NS, sub);
+            sub.setAttribute(attr, value);
+            xml.appendChild(sub);
+        }
+    } else {
+        for (var i = 0; i < subs.length; i++) {
+            if (value) {
+                subs[i].setAttribute(attr, value);
+                return;
+            } else {
+                subs[i].removeAttribute(attr);
+            }
+        }
+    }
+};
+
+exports.getText = function (xml) {
+    return xml.textContent;
+};
+
+exports.setText = function (xml, value) {
+    xml.textContent = value;
+};
+
+exports.getSubText = function (xml, NS, element, defaultVal) {
+    var subs = find(xml, NS, element);
+
+    defaultVal = defaultVal || '';
+
+    if (!subs.length) {
+        return defaultVal;
+    }
+
+    return subs[0].textContent || defaultVal;
+};
+
+exports.setSubText = function (xml, NS, element, value) {
+    var subs = find(xml, NS, element);
+    if (!subs.length) {
+        if (value) {
+            var sub = document.createElementNS(NS, element);
+            sub.textContent = value;
+            xml.appendChild(sub);
+        }
+    } else {
+        for (var i = 0; i < subs.length; i++) {
+            if (value) {
+                subs[i].textContent = value;
+                return;
+            } else {
+                xml.removeChild(subs[i]);
+            }
+        }
+    }
+};
+
+exports.getMultiSubText = function (xml, NS, element, extractor) {
+    var subs = find(xml, NS, element);
+    var results = [];
+
+    extractor = extractor || function (sub) {
+        return sub.textContent || '';
+    };
+
+    for (var i = 0; i < subs.length; i++) {
+        results.push(extractor(subs[i]));
+    }
+
+    return results;
+};
+
+exports.setMultiSubText = function (xml, NS, element, value, builder) {
+    var subs = find(xml, NS, element);
+    var values = [];
+    builder = builder || function (value) {
+        var sub = document.createElementNS(NS, element);
+        sub.textContent = value;
+        xml.appendChild(sub);
+    };
+    if (typeof value === 'string') {
+        values = (value || '').split('\n');
+    } else {
+        values = value;
+    }
+    _.forEach(subs, function (sub) {
+        xml.removeChild(sub);
+    });
+    _.forEach(values, function (val) {
+        if (val) {
+            builder(val);
+        }
+    });
+};
+
+exports.getSubLangText = function (xml, NS, element, defaultLang) {
+    var subs = find(xml, NS, element);
+    if (!subs.length) {
+        return {};
+    }
+
+    var lang, sub;
+    var results = {};
+    var langs = [];
+
+    for (var i = 0; i < subs.length; i++) {
+        sub = subs[i];
+        lang = sub.getAttributeNS(XML_NS, 'lang') || defaultLang;
+        langs.push(lang);
+        results[lang] = sub.textContent || '';
+    }
+
+    return results;
+};
+
+exports.setSubLangText = function (xml, NS, element, value, defaultLang) {
+    var sub, lang;
+    var subs = find(xml, NS, element);
+    if (subs.length) {
+        for (var i = 0; i < subs.length; i++) {
+            xml.removeChild(subs[i]);
+        }
+    }
+
+    if (typeof value === 'string') {
+        sub = document.createElementNS(NS, element);
+        sub.textContent = value;
+        xml.appendChild(sub);
+    } else if (typeof value === 'object') {
+        for (lang in value) {
+            if (value.hasOwnProperty(lang)) {
+                sub = document.createElementNS(NS, element);
+                if (lang !== defaultLang) {
+                    sub.setAttributeNS(XML_NS, 'lang', lang);
+                }
+                sub.textContent = value[lang];
+                xml.appendChild(sub);
+            }
+        }
+    }
+};
+
+exports.getBoolSub = function (xml, NS, element) {
+    var subs = find(xml, NS, element);
+    return !!subs.length;
+};
+
+exports.setBoolSub = function (xml, NS, element, value) {
+    var subs = find(xml, NS, element);
+    if (!subs.length) {
+        if (value) {
+            var sub = document.createElementNS(NS, element);
+            xml.appendChild(sub);
+        }
+    } else {
+        for (var i = 0; i < subs.length; i++) {
+            if (value) {
+                return;
+            } else {
+                xml.removeChild(subs[i]);
+            }
+        }
+    }
+};
+
+},{"lodash":5}],4:[function(require,module,exports){
+"use strict";
+
+var _ = require('lodash');
+var helpers = require('./helpers');
+var find = helpers.find;
+
+
+var field = exports.field = function (getter, setter) {
+    return function () {
+        var args = _.toArray(arguments);
+        return {
+            get: function () {
+                return getter.apply(null, [this.xml].concat(args));
+            },
+            set: function (value) {
+                setter.apply(null, ([this.xml].concat(args)).concat([value]));
+            }
+        };
+    };
+};
+
+exports.field = field;
+exports.attribute = field(helpers.getAttribute,
+                          helpers.setAttribute);
+exports.boolAttribute = field(helpers.getBoolAttribute,
+                              helpers.setBoolAttribute);
+exports.subAttribute = field(helpers.getSubAttribute,
+                             helpers.setSubAttribute);
+exports.text = field(helpers.getText,
+                     helpers.setText);
+exports.subText = field(helpers.getSubText,
+                        helpers.setSubText);
+exports.multiSubText = field(helpers.getMultiSubText,
+                             helpers.setMultiSubText);
+exports.subLangText = field(helpers.getSubLangText,
+                            helpers.setSubLangText);
+exports.boolSub = field(helpers.getBoolSub,
+                        helpers.setBoolSub);
+
+
+exports.extension = function (ChildJXT) {
+    return {
+        get: function () {
+            var name = ChildJXT.prototype._name;
+            if (!this._extensions[name]) {
+                var existing = find(this.xml, ChildJXT.prototype._NS, ChildJXT.prototype._EL);
+                if (!existing.length) {
+                    this._extensions[name] = new ChildJXT();
+                    this.xml.appendChild(this._extensions[name].xml);
+                } else {
+                    this._extensions[name] = new ChildJXT(null, existing[0]);
+                }
+                this._extensions[name].parent = this;
+            }
+            return this._extensions[name];
+        },
+        set: function (value) {
+            var child = this[ChildJXT.prototype._name];
+            _.extend(child, value);
+        }
+    };
+};
+
+exports.multiExtension = function (ChildJXT) {
+    return {
+        get: function () {
+            var data = find(this.xml, ChildJXT.prototype._NS, ChildJXT.prototype._EL);
+            var results = [];
+
+            _.forEach(data, function (xml) {
+                results.push(new ChildJXT({}, xml).toJSON());
+            });
+            return results;
+        },
+        set: function (value) {
+            var self = this;
+            var existing = find(this.xml, ChildJXT.prototype._NS, ChildJXT.prototype._EL);
+
+            _.forEach(existing, function (item) {
+                self.xml.removeChild(item);
+            });
+
+            _.forEach(value, function (data) {
+                var content = new ChildJXT(data);
+                self.xml.appendChild(content.xml);
+            });
+        }
+    };
+};
+
+},{"./helpers":3,"lodash":5}]},{},[1])(1)
 });
 ;
