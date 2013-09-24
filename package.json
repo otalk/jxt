@@ -1,6 +1,6 @@
 {
     "name": "jxt",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "description": "JSON/XML Translator. Set/retrieve data from XML just like working with a dictionary.",
     "main": "index.js",
     "browserify": "index.js",
@@ -10,7 +10,9 @@
     "devDependencies": {
         "precommit-hook": "0.3.4",
         "browserify": "2.18.1",
-        "tape": "1.1.1"
+        "uglify-js": "2.4.0",
+        "tape": "1.1.1",
+        "lodash": "2.1.0"
     },
     "repository": {
         "type": "git",
