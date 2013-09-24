@@ -1,6 +1,13 @@
-var bundle = require('browserify')();
+"use strict";
+
+var browserify = require('browserify');
+var UglifyJS = require('uglify-js');
 var fs = require('fs');
 
 
+var bundle = browserify();
 bundle.add('./index');
-bundle.bundle({standalone: 'jxt'}).pipe(fs.createWriteStream('jxt.bundle.js'));
+bundle.bundle({standalone: 'XMPP'}, function (err, js) {
+    var result = UglifyJS.minify(js, {fromString: true}).code;
+    fs.writeFileSync('jxt.bundle.js', result);
+});
