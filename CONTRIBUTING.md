@@ -4,7 +4,7 @@
 
 Feel free to submit bug reports or pull requests.
 
-If you have a security related issue that could be sensitive, please see the [Security Guidelines](SECURITY.md) first.
+If you have a security related issue, please see the [Security Guidelines](SECURITY.md) first.
 
 ## Pull Requests
 
