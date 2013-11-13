@@ -49,7 +49,6 @@
     ],
     "license": "MIT",
     "scripts": {
-        "build": "node build.js",
         "test": "node test/test.js"
     }
 }
