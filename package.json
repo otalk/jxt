@@ -11,11 +11,13 @@
         "btoa": ""
     },
     "devDependencies": {
-        "precommit-hook": "0.3.4",
-        "browserify": "2.18.1",
-        "uglify-js": "2.4.0",
-        "tape": "1.1.1",
-        "lodash": "2.1.0"
+        "browserify": "2.35.1",
+        "grunt": "0.4.1",
+        "grunt-browserify": "1.2.11",
+        "grunt-contrib-jshint": "0.7.1",
+        "grunt-contrib-uglify": "0.2.7",
+        "precommit-hook": "0.3.8",
+        "tape": "2.1.0"
     },
     "repository": {
         "type": "git",

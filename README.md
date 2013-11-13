@@ -3,6 +3,7 @@
 ## Project Status
 
 [![Dependency Status](https://david-dm.org/legastero/jxt.png)](https://david-dm.org/legastero/jxt)
+[![devDependency Status](https://david-dm.org/legastero/jxt/dev-status.png)](https://david-dm.org/legastero/jxt#info=devDependencies)
 
 [![Build Status](https://travis-ci.org/legastero/jxt.png)](https://travis-ci.org/legastero/jxt)
 
@@ -16,7 +17,8 @@ both in the browser and in node.
 
 Suitable for use with browserify/CommonJS on the client.
 
-If you're not using browserify or you want AMD support use `jxt.bundle.js`.
+If you're not using browserify or you want AMD support, run `grunt` to generate a
+bundled, standalone version.
 
 
 ## Installing
