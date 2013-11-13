@@ -2,7 +2,8 @@
 
 ## What is this?
 
-A basic in-browser framework for translating XML to JSON and back again.
+A basic framework for translating XML to JSON and back again, and can be used
+both in the browser and in node.
 
 Suitable for use with browserify/CommonJS on the client.
 
@@ -69,6 +70,26 @@ console.log(msg.toString());
 // {demoExt: {text: 'an extension'}}
 // <message xmlns="jabber:client"><demo xmlns="jxt">an extension</demo></message>
 ```
+
+## Predefined Field Types
+
+- attribute
+- b64Text
+- boolAttribute
+- boolSub
+- boolSubAttribute
+- dateAttribute
+- dateSub
+- dateSubAttribute
+- langAttribute
+- multiSubText
+- numberAttribute
+- numberSub
+- numberSubAttribute
+- subAttribute
+- subLangText
+- subText
+- text
 
 ## License
 

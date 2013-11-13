@@ -1,2 +1,1816 @@
-!function(n){if("function"==typeof bootstrap)bootstrap("xmpp",n);else if("object"==typeof exports)module.exports=n();else if("function"==typeof define&&define.amd)define(n);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeXMPP=n}else"undefined"!=typeof window?window.XMPP=n():global.XMPP=n()}(function(){var n;return function(n,t,e){function r(e,i){if(!t[e]){if(!n[e]){var o="function"==typeof require&&require;if(!i&&o)return o(e,!0);if(u)return u(e,!0);throw new Error("Cannot find module '"+e+"'")}var a=t[e]={exports:{}};n[e][0].call(a.exports,function(t){var u=n[e][1][t];return r(u?u:t)},a,a.exports)}return t[e].exports}for(var u="function"==typeof require&&require,i=0;i<e.length;i++)r(e[i]);return r}({1:[function(n,t){"use strict";var e=n("lodash"),r=n("./lib/core"),u=n("./lib/helpers"),i=n("./lib/types");t.exports=e.extend({},r,u,i)},{"./lib/core":2,"./lib/helpers":3,"./lib/types":4,lodash:5}],2:[function(n,t,e){"use strict";function r(n){var t=n.prototype._NS+"|"+n.prototype._EL;l[t]=n,s[t]=n}function u(n){return f.serializeToString(n)}function i(n){var t,e={},r={constructor:!0,_EL:!0,_NS:!0,_extensions:!0,_name:!0,parent:!0,prototype:!0,toJSON:!0,toString:!0,xml:!0};for(t in n._extensions)n._extensions[t].toJSON&&(e[t]=n._extensions[t].toJSON());for(t in n)if(!r[t]&&!(c[n._NS+"|"+n._EL]||{})[t]&&!n._extensions[t]&&"_"!==t[0]){var u=n[t];if("function"==typeof u)continue;var i=Object.prototype.toString.call(u);i.indexOf("Object")>=0?Object.keys(u).length>0&&(e[t]=u):i.indexOf("Array")>=0?u.length>0&&(e[t]=u):u&&(e[t]=u)}return e}var o=n("underscore");n("./helpers").find;var a=n("./types"),f=new XMLSerializer,l={},c={},s={};e.build=function(n){var t=s[n.namespaceURI+"|"+n.localName];return t?new t(null,n):void 0},e.extend=function(n,t,r){var u=n.prototype._NS+"|"+n.prototype._EL,i=t.prototype._name,o=t.prototype._NS+"|"+t.prototype._EL;l[o]=t,c[o]||(c[o]={}),c[u]||(c[u]={}),c[u][i]=t,e.add(n,i,a.extension(t)),r&&e.add(n,r,a.multiExtension(t))},e.add=function(n,t,e){e.get&&n.prototype.__defineGetter__(t,e.get),e.set&&n.prototype.__defineSetter__(t,e.set)},e.define=function(n){var t=function(t,e){var r=this;return r.xml=e||document.createElementNS(r._NS,r._EL),r.xml.parentNode&&r.xml.parentNode.namespaceURI===r._NS||r.xml.setAttribute("xmlns",r._NS),r._extensions={},o.each(r.xml.childNodes,function(n){var t=n.namespaceURI+"|"+n.localName,e=l[t];if(void 0!==e){var u=e.prototype._name;r._extensions[u]=new e(null,n),r._extensions[u].parent=r}}),o.extend(r,t),n.init&&n.init(t),r};t.prototype={constructor:{value:t},_name:n.name,_eventname:n.eventName,_NS:n.namespace,_EL:n.element,toString:function(){return u(this.xml)},toJSON:function(){return i(this)}};var a=Object.keys(n.fields||{});return a.forEach(function(r){e.add(t,r,n.fields[r])}),n.topLevel&&r(t),t}},{"./helpers":3,"./types":4,underscore:6}],4:[function(n,t,e){"use strict";var r=n("underscore"),u=n("./helpers"),i=u.find,o=e.field=function(n,t){return function(){var e=r.toArray(arguments);return{get:function(){return n.apply(null,[this.xml].concat(e))},set:function(n){t.apply(null,[this.xml].concat(e).concat([n]))}}}};e.field=o,e.boolAttribute=o(u.getBoolAttribute,u.setBoolAttribute),e.subAttribute=o(u.getSubAttribute,u.setSubAttribute),e.text=o(u.getText,u.setText),e.subText=o(u.getSubText,u.setSubText),e.multiSubText=o(u.getMultiSubText,u.setMultiSubText),e.subLangText=o(u.getSubLangText,u.setSubLangText),e.boolSub=o(u.getBoolSub,u.setBoolSub),e.attribute=function(n,t){return{get:function(){return u.getAttribute(this.xml,n,t)},set:function(t){u.setAttribute(this.xml,n,t)}}},e.extension=function(n){return{get:function(){var t=n.prototype._name;if(!this._extensions[t]){var e=i(this.xml,n.prototype._NS,n.prototype._EL);e.length?this._extensions[t]=new n(null,e[0]):(this._extensions[t]=new n,this.xml.appendChild(this._extensions[t].xml)),this._extensions[t].parent=this}return this._extensions[t]},set:function(t){var e=this[n.prototype._name];r.extend(e,t)}}},e.multiExtension=function(n){return{get:function(){var t=i(this.xml,n.prototype._NS,n.prototype._EL),e=[];return r.forEach(t,function(t){e.push(new n({},t).toJSON())}),e},set:function(t){var e=this,u=i(this.xml,n.prototype._NS,n.prototype._EL);r.forEach(u,function(n){e.xml.removeChild(n)}),r.forEach(t,function(t){var r=new n(t);e.xml.appendChild(r.xml)})}}}},{"./helpers":3,underscore:6}],3:[function(n,t,e){"use strict";var r=n("underscore"),u="http://www.w3.org/XML/1998/namespace";e.getParser=function(){return new DOMParser},e.createElement=function(n,t,r){var u=document.createElementNS(n,t);return r&&r!==n&&e.setAttribute(u,"xmlns",n),u};var i=e.find=function(n,t,e){var u=n.querySelectorAll(e);return r.filter(u,function(e){return e.namespaceURI===t&&e.parentNode==n})};e.findOrCreate=function(n,t,r){var u=e.find(n,t,r);if(u.length)return u[0];var i=e.createElement(t,r,n.namespaceURI);return n.appendChild(i),i},e.getAttribute=function(n,t,e){return n.getAttribute(t)||e||""},e.setAttribute=function(n,t,e,r){e||r?n.setAttribute(t,e):n.removeAttribute(t)},e.getBoolAttribute=function(n,t,e){var r=n.getAttribute(t)||e||"";return"true"===r||"1"===r},e.setBoolAttribute=function(n,t,e){e?n.setAttribute(t,"1"):n.removeAttribute(t)},e.getSubAttribute=function(n,t,e,r,u){var o=i(n,t,e);if(!o)return"";for(var a=0;a<o.length;a++)return o[a].getAttribute(r)||u||"";return""},e.setSubAttribute=function(n,t,r,u,o){var a=i(n,t,r);if(a.length)for(var f=0;f<a.length;f++){if(o)return a[f].setAttribute(u,o),void 0;a[f].removeAttribute(u)}else o&&(r=e.createElement(t,r,n.namespaceURI),r.setAttribute(u,o),n.appendChild(r))},e.getText=function(n){return n.textContent},e.setText=function(n,t){n.textContent=t},e.getSubText=function(n,t,e,r){var u=i(n,t,e);return r=r||"",u.length?u[0].textContent||r:r},e.setSubText=function(n,t,r,u){var o=i(n,t,r);if(o.length)for(var a=0;a<o.length;a++){if(u)return o[a].textContent=u,void 0;n.removeChild(o[a])}else if(u){var f=e.createElement(t,r,n.namespaceURI);f.textContent=u,n.appendChild(f)}},e.getMultiSubText=function(n,t,e,r){var u=i(n,t,e),o=[];r=r||function(n){return n.textContent||""};for(var a=0;a<u.length;a++)o.push(r(u[a]));return o},e.setMultiSubText=function(n,t,u,o,a){var f=i(n,t,u),l=[];a=a||function(r){var i=e.createElement(t,u,n.namespaceURI);i.textContent=r,n.appendChild(i)},l="string"==typeof o?(o||"").split("\n"):o,r.forEach(f,function(t){n.removeChild(t)}),r.forEach(l,function(n){n&&a(n)})},e.getSubLangText=function(n,t,e,r){var o=i(n,t,e);if(!o.length)return{};for(var a,f,l={},c=[],s=0;s<o.length;s++)f=o[s],a=f.getAttributeNS(u,"lang")||r,c.push(a),l[a]=f.textContent||"";return l},e.setSubLangText=function(n,t,r,o,a){var f,l,c=i(n,t,r);if(c.length)for(var s=0;s<c.length;s++)n.removeChild(c[s]);if("string"==typeof o)f=e.createElement(t,r,n.namespaceURI),f.textContent=o,n.appendChild(f);else if("object"==typeof o)for(l in o)o.hasOwnProperty(l)&&(f=e.createElement(t,r,n.namespaceURI),l!==a&&f.setAttributeNS(u,"lang",l),f.textContent=o[l],n.appendChild(f))},e.getBoolSub=function(n,t,e){var r=i(n,t,e);return!!r.length},e.setBoolSub=function(n,t,r,u){var o=i(n,t,r);if(o.length)for(var a=0;a<o.length;a++){if(u)return;n.removeChild(o[a])}else if(u){var f=e.createElement(t,r,n.namespaceURI);n.appendChild(f)}}},{underscore:6}],5:[function(t,e,r){!function(t){(function(){function u(n,t,e){for(var r=(e||0)-1,u=n?n.length:0;++r<u;)if(n[r]===t)return r;return-1}function i(n,t){var e=typeof t;if(n=n.cache,"boolean"==e||null==t)return n[t]?0:-1;"number"!=e&&"string"!=e&&(e="object");var r="number"==e?t:w+t;return n=(n=n[e])&&n[r],"object"==e?n&&u(n,t)>-1?0:-1:n?0:-1}function o(n){var t=this.cache,e=typeof n;if("boolean"==e||null==n)t[n]=!0;else{"number"!=e&&"string"!=e&&(e="object");var r="number"==e?n:w+n,u=t[e]||(t[e]={});"object"==e?(u[r]||(u[r]=[])).push(n):u[r]=!0}}function a(n){return n.charCodeAt(0)}function f(n,t){var e=n.criteria,r=t.criteria;if(e!==r){if(e>r||"undefined"==typeof e)return 1;if(r>e||"undefined"==typeof r)return-1}return n.index-t.index}function l(n){var t=-1,e=n.length,r=n[0],u=n[0|e/2],i=n[e-1];if(r&&"object"==typeof r&&u&&"object"==typeof u&&i&&"object"==typeof i)return!1;var a=p();a["false"]=a["null"]=a["true"]=a.undefined=!1;var f=p();for(f.array=n,f.cache=a,f.push=o;++t<e;)f.push(n[t]);return f}function c(n){return"\\"+H[n]}function s(){return b.pop()||[]}function p(){return _.pop()||{array:null,cache:null,configurable:!1,criteria:null,enumerable:!1,"false":!1,index:0,leading:!1,maxWait:0,"null":!1,number:null,object:null,push:null,string:null,trailing:!1,"true":!1,undefined:!1,value:null,writable:!1}}function v(){}function h(n){n.length=0,b.length<S&&b.push(n)}function g(n){var t=n.cache;t&&g(t),n.array=n.cache=n.criteria=n.object=n.number=n.string=n.value=null,_.length<S&&_.push(n)}function y(n,t,e){t||(t=0),"undefined"==typeof e&&(e=n?n.length:0);for(var r=-1,u=e-t||0,i=Array(0>u?0:u);++r<u;)i[r]=n[t+r];return i}function m(n){function t(n){return n&&"object"==typeof n&&!Kr(n)&&wr.call(n,"__wrapped__")?n:new e(n)}function e(n,t){this.__chain__=!!t,this.__wrapped__=n}function r(n,t,e,u,i){var o=n;if(e){if(o=e(o),"undefined"!=typeof o)return o;o=n}var a=St(o);if(a){var f=Cr.call(o);if(!V[f])return o;var l=Kr(o)}if(!a||!t)return a?l?y(o):nu({},o):o;var c=Wr[f];switch(f){case P:case $:return new c(+o);case W:case K:return new c(o);case X:return c(o.source,N.exec(o))}var p=!u;u||(u=s()),i||(i=s());for(var v=u.length;v--;)if(u[v]==n)return i[v];return o=l?c(o.length):{},l&&(wr.call(n,"index")&&(o.index=n.index),wr.call(n,"input")&&(o.input=n.input)),u.push(n),i.push(o),(l?zt:ru)(n,function(n,a){o[a]=r(n,t,e,u,i)}),p&&(h(u),h(i)),o}function o(n,t,e){if("function"!=typeof n)return ze;if("undefined"==typeof t)return n;var r=n.__bindData__||Jr.funcNames&&!n.name;if("undefined"==typeof r){var u=F&&_r.call(n);Jr.funcNames||!u||T.test(u)||(r=!0),(Jr.funcNames||!r)&&(r=!Jr.funcDecomp||F.test(u),Xr(n,r))}if(r!==!0&&r&&1&r[1])return n;switch(e){case 1:return function(e){return n.call(t,e)};case 2:return function(e,r){return n.call(t,e,r)};case 3:return function(e,r,u){return n.call(t,e,r,u)};case 4:return function(e,r,u,i){return n.call(t,e,r,u,i)}}return ke(n,t)}function b(n,t,e,r){for(var u=(r||0)-1,i=n?n.length:0,o=[];++u<i;){var a=n[u];if(a&&"object"==typeof a&&"number"==typeof a.length&&(Kr(a)||at(a))){t||(a=b(a,t,e));var f=-1,l=a.length,c=o.length;for(o.length+=l;++f<l;)o[c++]=a[f]}else e||o.push(a)}return o}function _(n,t,e,r,u,i){if(e){var o=e(n,t);if("undefined"!=typeof o)return!!o}if(n===t)return 0!==n||1/n==1/t;var a=typeof n,f=typeof t;if(!(n!==n||n&&G[a]||t&&G[f]))return!1;if(null==n||null==t)return n===t;var l=Cr.call(n),c=Cr.call(t);if(l==q&&(l=J),c==q&&(c=J),l!=c)return!1;switch(l){case P:case $:return+n==+t;case W:return n!=+n?t!=+t:0==n?1/n==1/t:n==+t;case X:case K:return n==sr(t)}var p=l==U;if(!p){if(wr.call(n,"__wrapped__ ")||wr.call(t,"__wrapped__"))return _(n.__wrapped__||n,t.__wrapped__||t,e,r,u,i);if(l!=J)return!1;var v=n.constructor,g=t.constructor;if(v!=g&&!(jt(v)&&v instanceof v&&jt(g)&&g instanceof g))return!1}var y=!u;u||(u=s()),i||(i=s());for(var m=u.length;m--;)if(u[m]==n)return i[m]==t;var d=0;if(o=!0,u.push(n),i.push(t),p){if(m=n.length,d=t.length,o=d==n.length,!o&&!r)return o;for(;d--;){var b=m,x=t[d];if(r)for(;b--&&!(o=_(n[b],x,e,r,u,i)););else if(!(o=_(n[d],x,e,r,u,i)))break}return o}return eu(t,function(t,a,f){return wr.call(f,a)?(d++,o=wr.call(n,a)&&_(n[a],t,e,r,u,i)):void 0}),o&&!r&&eu(n,function(n,t,e){return wr.call(e,t)?o=--d>-1:void 0}),y&&(h(u),h(i)),o}function S(n,t,e,r,u){(Kr(t)?zt:ru)(t,function(t,i){var o,a,f=t,l=n[i];if(t&&((a=Kr(t))||uu(t))){for(var c=r.length;c--;)if(o=r[c]==t){l=u[c];break}if(!o){var s;e&&(f=e(l,t),(s="undefined"!=typeof f)&&(l=f)),s||(l=a?Kr(l)?l:[]:uu(l)?l:{}),r.push(t),u.push(l),s||S(l,t,e,r,u)}}else e&&(f=e(l,t),"undefined"==typeof f&&(f=t)),"undefined"!=typeof f&&(l=f);n[i]=l})}function H(n,t,e){var r=-1,o=ut(),a=n?n.length:0,f=[],c=!t&&a>=j&&o===u,p=e||c?s():f;if(c){var v=l(p);v?(o=i,p=v):(c=!1,p=e?p:(h(p),f))}for(;++r<a;){var y=n[r],m=e?e(y,r,n):y;(t?!r||p[p.length-1]!==m:o(p,m)<0)&&((e||c)&&p.push(m),f.push(y))}return c?(h(p.array),g(p)):e&&h(p),f}function Y(n){return function(e,r,u){var i={};r=t.createCallback(r,u,3);var o=-1,a=e?e.length:0;if("number"==typeof a)for(;++o<a;){var f=e[o];n(i,f,r(f,o,e),e)}else ru(e,function(t,e,u){n(i,t,r(t,e,u),u)});return i}}function Z(n,t,e,r,u,i){var o=1&t,a=2&t,f=4&t,l=8&t,c=16&t,s=32&t,p=n;if(!a&&!jt(n))throw new pr;c&&!e.length&&(t&=-17,c=e=!1),s&&!r.length&&(t&=-33,s=r=!1);var v=n&&n.__bindData__;if(v)return!o||1&v[1]||(v[4]=u),!o&&1&v[1]&&(t|=8),!f||4&v[1]||(v[5]=i),c&&Sr.apply(v[2]||(v[2]=[]),e),s&&Sr.apply(v[3]||(v[3]=[]),r),v[1]|=t,Z.apply(null,v);if(!o||a||f||s||!(Jr.fastBind||Tr&&c))g=function(){var v=arguments,h=o?u:this;if((f||c||s)&&(v=Pr.call(v),c&&Or.apply(v,e),s&&Sr.apply(v,r),f&&v.length<i))return t|=16,Z(n,l?t:-4&t,v,null,u,i);if(a&&(n=h[p]),this instanceof g){h=tt(n.prototype);var y=n.apply(h,v);return St(y)?y:h}return n.apply(h,v)};else{if(c){var h=[u];Sr.apply(h,e)}var g=c?Tr.apply(n,h):Tr.call(n,u)}return Xr(g,Pr.call(arguments)),g}function tt(n){return St(n)?Rr(n):{}}function rt(n){return Hr[n]}function ut(){var n=(n=t.indexOf)===se?u:n;return n}function it(n){var t,e;return n&&Cr.call(n)==J&&(t=n.constructor,!jt(t)||t instanceof t)?(eu(n,function(n,t){e=t}),"undefined"==typeof e||wr.call(n,e)):!1}function ot(n){return Qr[n]}function at(n){return n&&"object"==typeof n&&"number"==typeof n.length&&Cr.call(n)==q||!1}function ft(n,t,e,u){return"boolean"!=typeof t&&null!=t&&(u=e,e=t,t=!1),r(n,t,"function"==typeof e&&o(e,u,1))}function lt(n,t,e){return r(n,!0,"function"==typeof t&&o(t,e,1))}function ct(n,e,r){var u;return e=t.createCallback(e,r,3),ru(n,function(n,t,r){return e(n,t,r)?(u=t,!1):void 0}),u}function st(n,e,r){var u;return e=t.createCallback(e,r,3),vt(n,function(n,t,r){return e(n,t,r)?(u=t,!1):void 0}),u}function pt(n,t,e){var r=[];eu(n,function(n,t){r.push(t,n)});var u=r.length;for(t=o(t,e,3);u--&&t(r[u--],r[u],n)!==!1;);return n}function vt(n,t,e){var r=Gr(n),u=r.length;for(t=o(t,e,3);u--;){var i=r[u];if(t(n[i],i,n)===!1)break}return n}function ht(n){var t=[];return eu(n,function(n,e){jt(n)&&t.push(e)}),t.sort()}function gt(n,t){return n?wr.call(n,t):!1}function yt(n){for(var t=-1,e=Gr(n),r=e.length,u={};++t<r;){var i=e[t];u[n[i]]=i}return u}function mt(n){return n===!0||n===!1||Cr.call(n)==P}function dt(n){return n?"object"==typeof n&&Cr.call(n)==$:!1}function bt(n){return n?1===n.nodeType:!1}function _t(n){var t=!0;if(!n)return t;var e=Cr.call(n),r=n.length;return e==U||e==K||e==q||e==J&&"number"==typeof r&&jt(n.splice)?!r:(ru(n,function(){return t=!1}),t)}function xt(n,t,e,r){return _(n,t,"function"==typeof e&&o(e,r,2))}function wt(n){return Br(n)&&!Fr(parseFloat(n))}function jt(n){return"function"==typeof n}function St(n){return!(!n||!G[typeof n])}function At(n){return kt(n)&&n!=+n}function Et(n){return null===n}function kt(n){return"number"==typeof n||Cr.call(n)==W}function Ct(n){return n?"object"==typeof n&&Cr.call(n)==X:!1}function Ot(n){return"string"==typeof n||Cr.call(n)==K}function Nt(n){return"undefined"==typeof n}function Tt(n){var t=arguments,e=2;if(!St(n))return n;if("number"!=typeof t[2]&&(e=t.length),e>3&&"function"==typeof t[e-2])var r=o(t[--e-1],t[e--],2);else e>2&&"function"==typeof t[e-1]&&(r=t[--e]);for(var u=Pr.call(arguments,1,e),i=-1,a=s(),f=s();++i<e;)S(n,u[i],r,a,f);return h(a),h(f),n}function Rt(n,e,r){var u=ut(),i="function"==typeof e,o={};if(i)e=t.createCallback(e,r,3);else var a=b(arguments,!0,!1,1);return eu(n,function(n,t,r){(i?!e(n,t,r):u(a,t)<0)&&(o[t]=n)}),o}function It(n){for(var t=-1,e=Gr(n),r=e.length,u=rr(r);++t<r;){var i=e[t];u[t]=[i,n[i]]}return u}function Bt(n,e,r){var u={};if("function"!=typeof e)for(var i=-1,o=b(arguments,!0,!1,1),a=St(n)?o.length:0;++i<a;){var f=o[i];f in n&&(u[f]=n[f])}else e=t.createCallback(e,r,3),eu(n,function(n,t,r){e(n,t,r)&&(u[t]=n)});return u}function Ft(n,t,e,r){var u=Kr(n);if(t=o(t,r,4),null==e)if(u)e=[];else{var i=n&&n.constructor,a=i&&i.prototype;e=tt(a)}return(u?zt:ru)(n,function(n,r,u){return t(e,n,r,u)}),e}function Mt(n){for(var t=-1,e=Gr(n),r=e.length,u=rr(r);++t<r;)u[t]=n[e[t]];return u}function Lt(n){for(var t=arguments,e=-1,r=b(t,!0,!1,1),u=t[2]&&t[2][t[1]]===n?1:r.length,i=rr(u);++e<u;)i[e]=n[r[e]];return i}function Dt(n,t,e){var r=-1,u=ut(),i=n?n.length:0,o=!1;return e=(0>e?Lr(0,i+e):e)||0,Kr(n)?o=u(n,t,e)>-1:"number"==typeof i?o=(Ot(n)?n.indexOf(t,e):u(n,t,e))>-1:ru(n,function(n){return++r>=e?!(o=n===t):void 0}),o}function qt(n,e,r){var u=!0;e=t.createCallback(e,r,3);var i=-1,o=n?n.length:0;if("number"==typeof o)for(;++i<o&&(u=!!e(n[i],i,n)););else ru(n,function(n,t,r){return u=!!e(n,t,r)});return u}function Ut(n,e,r){var u=[];e=t.createCallback(e,r,3);var i=-1,o=n?n.length:0;if("number"==typeof o)for(;++i<o;){var a=n[i];e(a,i,n)&&u.push(a)}else ru(n,function(n,t,r){e(n,t,r)&&u.push(n)});return u}function Pt(n,e,r){e=t.createCallback(e,r,3);var u=-1,i=n?n.length:0;if("number"!=typeof i){var o;return ru(n,function(n,t,r){return e(n,t,r)?(o=n,!1):void 0}),o}for(;++u<i;){var a=n[u];if(e(a,u,n))return a}}function $t(n,e,r){var u;return e=t.createCallback(e,r,3),Wt(n,function(n,t,r){return e(n,t,r)?(u=n,!1):void 0}),u}function zt(n,t,e){var r=-1,u=n?n.length:0;if(t=t&&"undefined"==typeof e?t:o(t,e,3),"number"==typeof u)for(;++r<u&&t(n[r],r,n)!==!1;);else ru(n,t);return n}function Wt(n,t,e){var r=n?n.length:0;if(t=t&&"undefined"==typeof e?t:o(t,e,3),"number"==typeof r)for(;r--&&t(n[r],r,n)!==!1;);else{var u=Gr(n);r=u.length,ru(n,function(n,e,i){return e=u?u[--r]:--r,t(i[e],e,i)})}return n}function Jt(n,t){var e=Pr.call(arguments,2),r=-1,u="function"==typeof t,i=n?n.length:0,o=rr("number"==typeof i?i:0);return zt(n,function(n){o[++r]=(u?t:n[t]).apply(n,e)}),o}function Xt(n,e,r){var u=-1,i=n?n.length:0;if(e=t.createCallback(e,r,3),"number"==typeof i)for(var o=rr(i);++u<i;)o[u]=e(n[u],u,n);else o=[],ru(n,function(n,t,r){o[++u]=e(n,t,r)});return o}function Kt(n,e,r){var u=-1/0,i=u;if(!e&&Kr(n))for(var o=-1,f=n.length;++o<f;){var l=n[o];l>i&&(i=l)}else e=!e&&Ot(n)?a:t.createCallback(e,r,3),zt(n,function(n,t,r){var o=e(n,t,r);o>u&&(u=o,i=n)});return i}function Vt(n,e,r){var u=1/0,i=u;if(!e&&Kr(n))for(var o=-1,f=n.length;++o<f;){var l=n[o];i>l&&(i=l)}else e=!e&&Ot(n)?a:t.createCallback(e,r,3),zt(n,function(n,t,r){var o=e(n,t,r);u>o&&(u=o,i=n)});return i}function Gt(n,t){var e=-1,r=n?n.length:0;if("number"==typeof r)for(var u=rr(r);++e<r;)u[e]=n[e][t];return u||Xt(n,t)}function Ht(n,t,e,r){if(!n)return e;var u=arguments.length<3;t=o(t,r,4);var i=-1,a=n.length;if("number"==typeof a)for(u&&(e=n[++i]);++i<a;)e=t(e,n[i],i,n);else ru(n,function(n,r,i){e=u?(u=!1,n):t(e,n,r,i)});return e}function Qt(n,t,e,r){var u=arguments.length<3;return t=o(t,r,4),Wt(n,function(n,r,i){e=u?(u=!1,n):t(e,n,r,i)}),e}function Yt(n,e,r){return e=t.createCallback(e,r,3),Ut(n,function(n,t,r){return!e(n,t,r)})}function Zt(n,t,e){var r=n?n.length:0;if("number"!=typeof r&&(n=Mt(n)),null==t||e)return n?n[Xe(r-1)]:d;var u=ne(n);return u.length=Dr(Lr(0,t),u.length),u}function ne(n){var t=-1,e=n?n.length:0,r=rr("number"==typeof e?e:0);return zt(n,function(n){var e=Xe(++t);r[t]=r[e],r[e]=n}),r}function te(n){var t=n?n.length:0;return"number"==typeof t?t:Gr(n).length}function ee(n,e,r){var u;e=t.createCallback(e,r,3);var i=-1,o=n?n.length:0;if("number"==typeof o)for(;++i<o&&!(u=e(n[i],i,n)););else ru(n,function(n,t,r){return!(u=e(n,t,r))});return!!u}function re(n,e,r){var u=-1,i=n?n.length:0,o=rr("number"==typeof i?i:0);for(e=t.createCallback(e,r,3),zt(n,function(n,t,r){var i=o[++u]=p();i.criteria=e(n,t,r),i.index=u,i.value=n}),i=o.length,o.sort(f);i--;){var a=o[i];o[i]=a.value,g(a)}return o}function ue(n){return n&&"number"==typeof n.length?y(n):Mt(n)}function ie(n){for(var t=-1,e=n?n.length:0,r=[];++t<e;){var u=n[t];u&&r.push(u)}return r}function oe(n){var t=-1,e=ut(),r=n?n.length:0,o=b(arguments,!0,!0,1),a=[],f=r>=j&&e===u;if(f){var c=l(o);c?(e=i,o=c):f=!1}for(;++t<r;){var s=n[t];e(o,s)<0&&a.push(s)}return f&&g(o),a}function ae(n,e,r){var u=-1,i=n?n.length:0;for(e=t.createCallback(e,r,3);++u<i;)if(e(n[u],u,n))return u;return-1}function fe(n,e,r){var u=n?n.length:0;for(e=t.createCallback(e,r,3);u--;)if(e(n[u],u,n))return u;return-1}function le(n,e,r){var u=0,i=n?n.length:0;if("number"!=typeof e&&null!=e){var o=-1;for(e=t.createCallback(e,r,3);++o<i&&e(n[o],o,n);)u++}else if(u=e,null==u||r)return n?n[0]:d;return y(n,0,Dr(Lr(0,u),i))}function ce(n,t,e,r){return"boolean"!=typeof t&&null!=t&&(r=e,e=r&&r[t]===n?null:t,t=!1),null!=e&&(n=Xt(n,e,r)),b(n,t)}function se(n,t,e){if("number"==typeof e){var r=n?n.length:0;e=0>e?Lr(0,r+e):e||0}else if(e){var i=_e(n,t);return n[i]===t?i:-1}return u(n,t,e)}function pe(n,e,r){var u=0,i=n?n.length:0;if("number"!=typeof e&&null!=e){var o=i;for(e=t.createCallback(e,r,3);o--&&e(n[o],o,n);)u++}else u=null==e||r?1:e||u;return y(n,0,Dr(Lr(0,i-u),i))}function ve(n){for(var t=arguments,e=t.length,r=-1,o=s(),a=-1,f=ut(),c=n?n.length:0,p=[],v=s();++r<e;){var y=t[r];o[r]=f===u&&(y?y.length:0)>=j&&l(r?t[r]:v)}n:for(;++a<c;){var m=o[0];if(y=n[a],(m?i(m,y):f(v,y))<0){for(r=e,(m||v).push(y);--r;)if(m=o[r],(m?i(m,y):f(t[r],y))<0)continue n;p.push(y)}}for(;e--;)m=o[e],m&&g(m);return h(o),h(v),p}function he(n,e,r){var u=0,i=n?n.length:0;if("number"!=typeof e&&null!=e){var o=i;for(e=t.createCallback(e,r,3);o--&&e(n[o],o,n);)u++}else if(u=e,null==u||r)return n?n[i-1]:d;return y(n,Lr(0,i-u))}function ge(n,t,e){var r=n?n.length:0;for("number"==typeof e&&(r=(0>e?Lr(0,r+e):Dr(e,r-1))+1);r--;)if(n[r]===t)return r;return-1}function ye(n){for(var t=arguments,e=0,r=t.length,u=n?n.length:0;++e<r;)for(var i=-1,o=t[e];++i<u;)n[i]===o&&(kr.call(n,i--,1),u--);return n}function me(n,t,e){n=+n||0,e="number"==typeof e?e:+e||1,null==t&&(t=n,n=0);for(var r=-1,u=Lr(0,mr((t-n)/(e||1))),i=rr(u);++r<u;)i[r]=n,n+=e;return i}function de(n,e,r){var u=-1,i=n?n.length:0,o=[];for(e=t.createCallback(e,r,3);++u<i;){var a=n[u];e(a,u,n)&&(o.push(a),kr.call(n,u--,1),i--)}return o}function be(n,e,r){if("number"!=typeof e&&null!=e){var u=0,i=-1,o=n?n.length:0;for(e=t.createCallback(e,r,3);++i<o&&e(n[i],i,n);)u++}else u=null==e||r?1:Lr(0,e);return y(n,u)}function _e(n,e,r,u){var i=0,o=n?n.length:i;for(r=r?t.createCallback(r,u,1):ze,e=r(e);o>i;){var a=i+o>>>1;r(n[a])<e?i=a+1:o=a}return i}function xe(){return H(b(arguments,!0,!0))}function we(n,e,r,u){return"boolean"!=typeof e&&null!=e&&(u=r,r=u&&u[e]===n?null:e,e=!1),null!=r&&(r=t.createCallback(r,u,3)),H(n,e,r)}function je(n){return oe(n,Pr.call(arguments,1))}function Se(){for(var n=arguments.length>1?arguments:arguments[0],t=-1,e=n?Kt(Gt(n,"length")):0,r=rr(0>e?0:e);++t<e;)r[t]=Gt(n,t);return r}function Ae(n,t){for(var e=-1,r=n?n.length:0,u={};++e<r;){var i=n[e];t?u[i]=t[e]:i&&(u[i[0]]=i[1])}return u}function Ee(n,t){if(!jt(t))throw new pr;return function(){return--n<1?t.apply(this,arguments):void 0}}function ke(n,t){return arguments.length>2?Z(n,17,Pr.call(arguments,2),null,t):Z(n,1,null,null,t)}function Ce(n){for(var t=arguments.length>1?b(arguments,!0,!1,1):ht(n),e=-1,r=t.length;++e<r;){var u=t[e];n[u]=Z(n[u],1,null,null,n)}return n}function Oe(n,t){return arguments.length>2?Z(t,19,Pr.call(arguments,2),null,n):Z(t,3,null,null,n)}function Ne(){for(var n=arguments,t=n.length;t--;)if(!jt(n[t]))throw new pr;return function(){for(var t=arguments,e=n.length;e--;)t=[n[e].apply(this,t)];return t[0]}}function Te(n,t,e){var r=typeof n;if(null==n||"function"==r)return o(n,t,e);if("object"!=r)return function(t){return t[n]};var u=Gr(n),i=u[0],a=n[i];return 1!=u.length||a!==a||St(a)?function(t){for(var e=u.length,r=!1;e--&&(r=_(t[u[e]],n[u[e]],null,!0)););return r}:function(n){var t=n[i];return a===t&&(0!==a||1/a==1/t)}}function Re(n,t){return t="number"==typeof t?t:+t||n.length,Z(n,4,null,null,null,t)}function Ie(n,t,e){var r,u,i,o,a,f,l,c=0,s=!1,p=!0;if(!jt(n))throw new pr;if(t=Lr(0,t)||0,e===!0){var v=!0;p=!1}else St(e)&&(v=e.leading,s="maxWait"in e&&(Lr(t,e.maxWait)||0),p="trailing"in e?e.trailing:p);var h=function(){var e=t-(jr()-o);if(0>=e){u&&dr(u);var s=l;u=f=l=d,s&&(c=jr(),i=n.apply(a,r))}else f=Er(h,e)},g=function(){f&&dr(f),u=f=l=d,(p||s!==t)&&(c=jr(),i=n.apply(a,r))};return function(){if(r=arguments,o=jr(),a=this,l=p&&(f||!v),s===!1)var e=v&&!f;else{u||v||(c=o);var y=s-(o-c);0>=y?(u&&(u=dr(u)),c=o,i=n.apply(a,r)):u||(u=Er(g,y))}return f||t===s||(f=Er(h,t)),e&&(i=n.apply(a,r)),i}}function Be(n){if(!jt(n))throw new pr;var t=Pr.call(arguments,1);return Er(function(){n.apply(d,t)},1)}function Fe(n,t){if(!jt(n))throw new pr;var e=Pr.call(arguments,2);return Er(function(){n.apply(d,e)},t)}function Me(n,t){if(!jt(n))throw new pr;var e=function(){var r=e.cache,u=t?t.apply(this,arguments):w+arguments[0];return wr.call(r,u)?r[u]:r[u]=n.apply(this,arguments)};return e.cache={},e}function Le(n){var t,e;if(!jt(n))throw new pr;return function(){return t?e:(t=!0,e=n.apply(this,arguments),n=null,e)}}function De(n){return Z(n,16,Pr.call(arguments,1))}function qe(n){return Z(n,32,null,Pr.call(arguments,1))}function Ue(n,t,e){var r=!0,u=!0;if(!jt(n))throw new pr;e===!1?r=!1:St(e)&&(r="leading"in e?e.leading:r,u="trailing"in e?e.trailing:u),e=p(),e.leading=r,e.maxWait=t,e.trailing=u;var i=Ie(n,t,e);return g(e),i}function Pe(n,t){if(!jt(t))throw new pr;return function(){var e=[n];return Sr.apply(e,arguments),t.apply(this,e)}}function $e(n){return null==n?"":sr(n).replace(Zr,rt)}function ze(n){return n}function We(n,r){var u=n,i=!r||jt(u);r||(u=e,r=n,n=t),zt(ht(r),function(t){var e=n[t]=r[t];i&&(u.prototype[t]=function(){var t=this.__wrapped__,r=[t];Sr.apply(r,arguments);var i=e.apply(n,r);return t&&"object"==typeof t&&t===i?this:new u(i)})})}function Je(){return n._=gr,this}function Xe(n,t,e){var r=null==n,u=null==t;null==e&&("boolean"==typeof n&&u?(e=n,n=1):u||"boolean"!=typeof t||(e=t,u=!0)),r&&u&&(t=1),n=+n||0,u?(t=n,n=0):t=+t||0;var i=Ur();return e||n%1||t%1?n+Dr(i*(t-n+parseFloat("1e-"+((i+"").length-1))),t):n+br(i*(t-n+1))}function Ke(n,t){if(n){var e=n[t];return jt(e)?n[t]():e}}function Ve(n,e,r){var u=t.templateSettings;n||(n=""),r=tu({},r,u);var i,o=tu({},r.imports,u.imports),a=Gr(o),f=Mt(o),l=0,s=r.interpolate||B,p="__p += '",v=cr((r.escape||B).source+"|"+s.source+"|"+(s===R?O:B).source+"|"+(r.evaluate||B).source+"|$","g");n.replace(v,function(t,e,r,u,o,a){return r||(r=u),p+=n.slice(l,a).replace(M,c),e&&(p+="' +\n__e("+e+") +\n'"),o&&(i=!0,p+="';\n"+o+";\n__p += '"),r&&(p+="' +\n((__t = ("+r+")) == null ? '' : __t) +\n'"),l=a+t.length,t}),p+="';\n";var h=r.variable,g=h;g||(h="obj",p="with ("+h+") {\n"+p+"\n}\n"),p=(i?p.replace(E,""):p).replace(k,"$1").replace(C,"$1;"),p="function("+h+") {\n"+(g?"":h+" || ("+h+" = {});\n")+"var __t, __p = '', __e = _.escape"+(i?", __j = Array.prototype.join;\nfunction print() { __p += __j.call(arguments, '') }\n":";\n")+p+"return __p\n}";var y="\n/*\n//# sourceURL="+(r.sourceURL||"/lodash/template/source["+D++ +"]")+"\n*/";try{var m=or(a,"return "+p+y).apply(d,f)}catch(b){throw b.source=p,b}return e?m(e):(m.source=p,m)}function Ge(n,t,e){n=(n=+n)>-1?n:0;var r=-1,u=rr(n);for(t=o(t,e,1);++r<n;)u[r]=t(r);return u}function He(n){return null==n?"":sr(n).replace(Yr,ot)}function Qe(n){var t=++x;return sr(null==n?"":n)+t}function Ye(n){return n=new e(n),n.__chain__=!0,n}function Ze(n,t){return t(n),n}function nr(){return this.__chain__=!0,this}function tr(){return sr(this.__wrapped__)}function er(){return this.__wrapped__}n=n?et.defaults(Q.Object(),n,et.pick(Q,L)):Q;var rr=n.Array,ur=n.Boolean,ir=n.Date,or=n.Function,ar=n.Math,fr=n.Number,lr=n.Object,cr=n.RegExp,sr=n.String,pr=n.TypeError,vr=[],hr=lr.prototype,gr=n._,yr=cr("^"+sr(hr.valueOf).replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/valueOf|for [^\]]+/g,".+?")+"$"),mr=ar.ceil,dr=n.clearTimeout,br=ar.floor,_r=or.prototype.toString,xr=yr.test(xr=lr.getPrototypeOf)&&xr,wr=hr.hasOwnProperty,jr=yr.test(jr=ir.now)&&jr||function(){return+new ir},Sr=vr.push,Ar=n.setImmediate,Er=n.setTimeout,kr=vr.splice,Cr=hr.toString,Or=vr.unshift,Nr=function(){try{var n={},t=yr.test(t=lr.defineProperty)&&t,e=t(n,n,n)&&t}catch(r){}return e}(),Tr=yr.test(Tr=Cr.bind)&&Tr,Rr=yr.test(Rr=lr.create)&&Rr,Ir=yr.test(Ir=rr.isArray)&&Ir,Br=n.isFinite,Fr=n.isNaN,Mr=yr.test(Mr=lr.keys)&&Mr,Lr=ar.max,Dr=ar.min,qr=n.parseInt,Ur=ar.random,Pr=vr.slice,$r=yr.test(n.attachEvent),zr=Tr&&!/\n|true/.test(Tr+$r),Wr={};Wr[U]=rr,Wr[P]=ur,Wr[$]=ir,Wr[z]=or,Wr[J]=lr,Wr[W]=fr,Wr[X]=cr,Wr[K]=sr,e.prototype=t.prototype;var Jr=t.support={};Jr.fastBind=Tr&&!zr,Jr.funcDecomp=!yr.test(n.WinRTError)&&F.test(m),Jr.funcNames="string"==typeof or.name,t.templateSettings={escape:/<%-([\s\S]+?)%>/g,evaluate:/<%([\s\S]+?)%>/g,interpolate:R,variable:"",imports:{_:t}};var Xr=Nr?function(n,t){var e=p();e.value=t,Nr(n,"__bindData__",e),g(e)}:v,Kr=Ir||function(n){return n&&"object"==typeof n&&"number"==typeof n.length&&Cr.call(n)==U||!1},Vr=function(n){var t,e=n,r=[];if(!e)return r;if(!G[typeof n])return r;for(t in e)wr.call(e,t)&&r.push(t);return r},Gr=Mr?function(n){return St(n)?Mr(n):[]}:Vr,Hr={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"},Qr=yt(Hr),Yr=cr("("+Gr(Qr).join("|")+")","g"),Zr=cr("["+Gr(Hr).join("")+"]","g"),nu=function(n,t,e){var r,u=n,i=u;if(!u)return i;var a=arguments,f=0,l="number"==typeof e?2:a.length;if(l>3&&"function"==typeof a[l-2])var c=o(a[--l-1],a[l--],2);else l>2&&"function"==typeof a[l-1]&&(c=a[--l]);for(;++f<l;)if(u=a[f],u&&G[typeof u])for(var s=-1,p=G[typeof u]&&Gr(u),v=p?p.length:0;++s<v;)r=p[s],i[r]=c?c(i[r],u[r]):u[r];return i},tu=function(n,t,e){var r,u=n,i=u;if(!u)return i;for(var o=arguments,a=0,f="number"==typeof e?2:o.length;++a<f;)if(u=o[a],u&&G[typeof u])for(var l=-1,c=G[typeof u]&&Gr(u),s=c?c.length:0;++l<s;)r=c[l],"undefined"==typeof i[r]&&(i[r]=u[r]);return i},eu=function(n,t,e){var r,u=n,i=u;if(!u)return i;if(!G[typeof u])return i;t=t&&"undefined"==typeof e?t:o(t,e,3);for(r in u)if(t(u[r],r,n)===!1)return i;return i},ru=function(n,t,e){var r,u=n,i=u;if(!u)return i;if(!G[typeof u])return i;t=t&&"undefined"==typeof e?t:o(t,e,3);for(var a=-1,f=G[typeof u]&&Gr(u),l=f?f.length:0;++a<l;)if(r=f[a],t(u[r],r,n)===!1)return i;return i},uu=function(n){if(!n||Cr.call(n)!=J)return!1;var t=n.valueOf,e="function"==typeof t&&(e=xr(t))&&xr(e);return e?n==e||xr(n)==e:it(n)},iu=Y(function(n,t,e){wr.call(n,e)?n[e]++:n[e]=1}),ou=Y(function(n,t,e){(wr.call(n,e)?n[e]:n[e]=[]).push(t)}),au=Y(function(n,t,e){n[e]=t}),fu=Ut;zr&&nt&&"function"==typeof Ar&&(Be=function(t){if(!jt(t))throw new pr;return Ar.apply(n,arguments)});var lu=8==qr(A+"08")?qr:function(n,t){return qr(Ot(n)?n.replace(I,""):n,t||0)};return t.after=Ee,t.assign=nu,t.at=Lt,t.bind=ke,t.bindAll=Ce,t.bindKey=Oe,t.chain=Ye,t.compact=ie,t.compose=Ne,t.countBy=iu,t.createCallback=Te,t.curry=Re,t.debounce=Ie,t.defaults=tu,t.defer=Be,t.delay=Fe,t.difference=oe,t.filter=Ut,t.flatten=ce,t.forEach=zt,t.forEachRight=Wt,t.forIn=eu,t.forInRight=pt,t.forOwn=ru,t.forOwnRight=vt,t.functions=ht,t.groupBy=ou,t.indexBy=au,t.initial=pe,t.intersection=ve,t.invert=yt,t.invoke=Jt,t.keys=Gr,t.map=Xt,t.max=Kt,t.memoize=Me,t.merge=Tt,t.min=Vt,t.omit=Rt,t.once=Le,t.pairs=It,t.partial=De,t.partialRight=qe,t.pick=Bt,t.pluck=Gt,t.pull=ye,t.range=me,t.reject=Yt,t.remove=de,t.rest=be,t.shuffle=ne,t.sortBy=re,t.tap=Ze,t.throttle=Ue,t.times=Ge,t.toArray=ue,t.transform=Ft,t.union=xe,t.uniq=we,t.values=Mt,t.where=fu,t.without=je,t.wrap=Pe,t.zip=Se,t.zipObject=Ae,t.collect=Xt,t.drop=be,t.each=zt,t.eachRight=Wt,t.extend=nu,t.methods=ht,t.object=Ae,t.select=Ut,t.tail=be,t.unique=we,t.unzip=Se,We(t),t.clone=ft,t.cloneDeep=lt,t.contains=Dt,t.escape=$e,t.every=qt,t.find=Pt,t.findIndex=ae,t.findKey=ct,t.findLast=$t,t.findLastIndex=fe,t.findLastKey=st,t.has=gt,t.identity=ze,t.indexOf=se,t.isArguments=at,t.isArray=Kr,t.isBoolean=mt,t.isDate=dt,t.isElement=bt,t.isEmpty=_t,t.isEqual=xt,t.isFinite=wt,t.isFunction=jt,t.isNaN=At,t.isNull=Et,t.isNumber=kt,t.isObject=St,t.isPlainObject=uu,t.isRegExp=Ct,t.isString=Ot,t.isUndefined=Nt,t.lastIndexOf=ge,t.mixin=We,t.noConflict=Je,t.parseInt=lu,t.random=Xe,t.reduce=Ht,t.reduceRight=Qt,t.result=Ke,t.runInContext=m,t.size=te,t.some=ee,t.sortedIndex=_e,t.template=Ve,t.unescape=He,t.uniqueId=Qe,t.all=qt,t.any=ee,t.detect=Pt,t.findWhere=Pt,t.foldl=Ht,t.foldr=Qt,t.include=Dt,t.inject=Ht,ru(t,function(n,r){t.prototype[r]||(t.prototype[r]=function(){var r=[this.__wrapped__],u=this.__chain__;
-Sr.apply(r,arguments);var i=n.apply(t,r);return u?new e(i,u):i})}),t.first=le,t.last=he,t.sample=Zt,t.take=le,t.head=le,ru(t,function(n,r){var u="sample"!==r;t.prototype[r]||(t.prototype[r]=function(t,r){var i=this.__chain__,o=n(this.__wrapped__,t,r);return i||null!=t&&(!r||u&&"function"==typeof t)?new e(o,i):o})}),t.VERSION="2.1.0",t.prototype.chain=nr,t.prototype.toString=tr,t.prototype.value=er,t.prototype.valueOf=er,zt(["join","pop","shift"],function(n){var r=vr[n];t.prototype[n]=function(){var n=this.__chain__,t=r.apply(this.__wrapped__,arguments);return n?new e(t,n):t}}),zt(["push","reverse","sort","unshift"],function(n){var e=vr[n];t.prototype[n]=function(){return e.apply(this.__wrapped__,arguments),this}}),zt(["concat","slice","splice"],function(n){var r=vr[n];t.prototype[n]=function(){return new e(r.apply(this.__wrapped__,arguments),this.__chain__)}}),t}var d,b=[],_=[],x=0,w=+new Date+"",j=75,S=40,A=" 	\f ﻿\n\r\u2028\u2029 ᠎             　",E=/\b__p \+= '';/g,k=/\b(__p \+=) '' \+/g,C=/(__e\(.*?\)|\b__t\)) \+\n'';/g,O=/\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g,N=/\w*$/,T=/^function[ \n\r\t]+\w/,R=/<%=([\s\S]+?)%>/g,I=RegExp("^["+A+"]*0+(?=.$)"),B=/($^)/,F=/\bthis\b/,M=/['\n\r\t\u2028\u2029\\]/g,L=["Array","Boolean","Date","Function","Math","Number","Object","RegExp","String","_","attachEvent","clearTimeout","isFinite","isNaN","parseInt","setImmediate","setTimeout"],D=0,q="[object Arguments]",U="[object Array]",P="[object Boolean]",$="[object Date]",z="[object Function]",W="[object Number]",J="[object Object]",X="[object RegExp]",K="[object String]",V={};V[z]=!1,V[q]=V[U]=V[P]=V[$]=V[W]=V[J]=V[X]=V[K]=!0;var G={"boolean":!1,"function":!0,object:!0,number:!1,string:!1,undefined:!1},H={"\\":"\\","'":"'","\n":"n","\r":"r","	":"t","\u2028":"u2028","\u2029":"u2029"},Q=G[typeof window]&&window||this,Y=G[typeof r]&&r&&!r.nodeType&&r,Z=G[typeof e]&&e&&!e.nodeType&&e,nt=Z&&Z.exports===Y&&Y,tt=G[typeof t]&&t;!tt||tt.global!==tt&&tt.window!==tt||(Q=tt);var et=m();"function"==typeof n&&"object"==typeof n.amd&&n.amd?(Q._=et,n(function(){return et})):Y&&Z?nt?(Z.exports=et)._=et:Y._=et:Q._=et}).call(this)}(window)},{}],6:[function(n,t,e){!function(){(function(){var n=this,r=n._,u={},i=Array.prototype,o=Object.prototype,a=Function.prototype,f=i.push,l=i.slice,c=i.concat,s=o.toString,p=o.hasOwnProperty,v=i.forEach,h=i.map,g=i.reduce,y=i.reduceRight,m=i.filter,d=i.every,b=i.some,_=i.indexOf,x=i.lastIndexOf,w=Array.isArray,j=Object.keys,S=a.bind,A=function(n){return n instanceof A?n:this instanceof A?(this._wrapped=n,void 0):new A(n)};"undefined"!=typeof e?("undefined"!=typeof t&&t.exports&&(e=t.exports=A),e._=A):n._=A,A.VERSION="1.5.2";var E=A.each=A.forEach=function(n,t,e){if(null!=n)if(v&&n.forEach===v)n.forEach(t,e);else if(n.length===+n.length){for(var r=0,i=n.length;i>r;r++)if(t.call(e,n[r],r,n)===u)return}else for(var o=A.keys(n),r=0,i=o.length;i>r;r++)if(t.call(e,n[o[r]],o[r],n)===u)return};A.map=A.collect=function(n,t,e){var r=[];return null==n?r:h&&n.map===h?n.map(t,e):(E(n,function(n,u,i){r.push(t.call(e,n,u,i))}),r)};var k="Reduce of empty array with no initial value";A.reduce=A.foldl=A.inject=function(n,t,e,r){var u=arguments.length>2;if(null==n&&(n=[]),g&&n.reduce===g)return r&&(t=A.bind(t,r)),u?n.reduce(t,e):n.reduce(t);if(E(n,function(n,i,o){u?e=t.call(r,e,n,i,o):(e=n,u=!0)}),!u)throw new TypeError(k);return e},A.reduceRight=A.foldr=function(n,t,e,r){var u=arguments.length>2;if(null==n&&(n=[]),y&&n.reduceRight===y)return r&&(t=A.bind(t,r)),u?n.reduceRight(t,e):n.reduceRight(t);var i=n.length;if(i!==+i){var o=A.keys(n);i=o.length}if(E(n,function(a,f,l){f=o?o[--i]:--i,u?e=t.call(r,e,n[f],f,l):(e=n[f],u=!0)}),!u)throw new TypeError(k);return e},A.find=A.detect=function(n,t,e){var r;return C(n,function(n,u,i){return t.call(e,n,u,i)?(r=n,!0):void 0}),r},A.filter=A.select=function(n,t,e){var r=[];return null==n?r:m&&n.filter===m?n.filter(t,e):(E(n,function(n,u,i){t.call(e,n,u,i)&&r.push(n)}),r)},A.reject=function(n,t,e){return A.filter(n,function(n,r,u){return!t.call(e,n,r,u)},e)},A.every=A.all=function(n,t,e){t||(t=A.identity);var r=!0;return null==n?r:d&&n.every===d?n.every(t,e):(E(n,function(n,i,o){return(r=r&&t.call(e,n,i,o))?void 0:u}),!!r)};var C=A.some=A.any=function(n,t,e){t||(t=A.identity);var r=!1;return null==n?r:b&&n.some===b?n.some(t,e):(E(n,function(n,i,o){return r||(r=t.call(e,n,i,o))?u:void 0}),!!r)};A.contains=A.include=function(n,t){return null==n?!1:_&&n.indexOf===_?-1!=n.indexOf(t):C(n,function(n){return n===t})},A.invoke=function(n,t){var e=l.call(arguments,2),r=A.isFunction(t);return A.map(n,function(n){return(r?t:n[t]).apply(n,e)})},A.pluck=function(n,t){return A.map(n,function(n){return n[t]})},A.where=function(n,t,e){return A.isEmpty(t)?e?void 0:[]:A[e?"find":"filter"](n,function(n){for(var e in t)if(t[e]!==n[e])return!1;return!0})},A.findWhere=function(n,t){return A.where(n,t,!0)},A.max=function(n,t,e){if(!t&&A.isArray(n)&&n[0]===+n[0]&&n.length<65535)return Math.max.apply(Math,n);if(!t&&A.isEmpty(n))return-1/0;var r={computed:-1/0,value:-1/0};return E(n,function(n,u,i){var o=t?t.call(e,n,u,i):n;o>r.computed&&(r={value:n,computed:o})}),r.value},A.min=function(n,t,e){if(!t&&A.isArray(n)&&n[0]===+n[0]&&n.length<65535)return Math.min.apply(Math,n);if(!t&&A.isEmpty(n))return 1/0;var r={computed:1/0,value:1/0};return E(n,function(n,u,i){var o=t?t.call(e,n,u,i):n;o<r.computed&&(r={value:n,computed:o})}),r.value},A.shuffle=function(n){var t,e=0,r=[];return E(n,function(n){t=A.random(e++),r[e-1]=r[t],r[t]=n}),r},A.sample=function(n,t,e){return arguments.length<2||e?n[A.random(n.length-1)]:A.shuffle(n).slice(0,Math.max(0,t))};var O=function(n){return A.isFunction(n)?n:function(t){return t[n]}};A.sortBy=function(n,t,e){var r=O(t);return A.pluck(A.map(n,function(n,t,u){return{value:n,index:t,criteria:r.call(e,n,t,u)}}).sort(function(n,t){var e=n.criteria,r=t.criteria;if(e!==r){if(e>r||void 0===e)return 1;if(r>e||void 0===r)return-1}return n.index-t.index}),"value")};var N=function(n){return function(t,e,r){var u={},i=null==e?A.identity:O(e);return E(t,function(e,o){var a=i.call(r,e,o,t);n(u,a,e)}),u}};A.groupBy=N(function(n,t,e){(A.has(n,t)?n[t]:n[t]=[]).push(e)}),A.indexBy=N(function(n,t,e){n[t]=e}),A.countBy=N(function(n,t){A.has(n,t)?n[t]++:n[t]=1}),A.sortedIndex=function(n,t,e,r){e=null==e?A.identity:O(e);for(var u=e.call(r,t),i=0,o=n.length;o>i;){var a=i+o>>>1;e.call(r,n[a])<u?i=a+1:o=a}return i},A.toArray=function(n){return n?A.isArray(n)?l.call(n):n.length===+n.length?A.map(n,A.identity):A.values(n):[]},A.size=function(n){return null==n?0:n.length===+n.length?n.length:A.keys(n).length},A.first=A.head=A.take=function(n,t,e){return null==n?void 0:null==t||e?n[0]:l.call(n,0,t)},A.initial=function(n,t,e){return l.call(n,0,n.length-(null==t||e?1:t))},A.last=function(n,t,e){return null==n?void 0:null==t||e?n[n.length-1]:l.call(n,Math.max(n.length-t,0))},A.rest=A.tail=A.drop=function(n,t,e){return l.call(n,null==t||e?1:t)},A.compact=function(n){return A.filter(n,A.identity)};var T=function(n,t,e){return t&&A.every(n,A.isArray)?c.apply(e,n):(E(n,function(n){A.isArray(n)||A.isArguments(n)?t?f.apply(e,n):T(n,t,e):e.push(n)}),e)};A.flatten=function(n,t){return T(n,t,[])},A.without=function(n){return A.difference(n,l.call(arguments,1))},A.uniq=A.unique=function(n,t,e,r){A.isFunction(t)&&(r=e,e=t,t=!1);var u=e?A.map(n,e,r):n,i=[],o=[];return E(u,function(e,r){(t?r&&o[o.length-1]===e:A.contains(o,e))||(o.push(e),i.push(n[r]))}),i},A.union=function(){return A.uniq(A.flatten(arguments,!0))},A.intersection=function(n){var t=l.call(arguments,1);return A.filter(A.uniq(n),function(n){return A.every(t,function(t){return A.indexOf(t,n)>=0})})},A.difference=function(n){var t=c.apply(i,l.call(arguments,1));return A.filter(n,function(n){return!A.contains(t,n)})},A.zip=function(){for(var n=A.max(A.pluck(arguments,"length").concat(0)),t=new Array(n),e=0;n>e;e++)t[e]=A.pluck(arguments,""+e);return t},A.object=function(n,t){if(null==n)return{};for(var e={},r=0,u=n.length;u>r;r++)t?e[n[r]]=t[r]:e[n[r][0]]=n[r][1];return e},A.indexOf=function(n,t,e){if(null==n)return-1;var r=0,u=n.length;if(e){if("number"!=typeof e)return r=A.sortedIndex(n,t),n[r]===t?r:-1;r=0>e?Math.max(0,u+e):e}if(_&&n.indexOf===_)return n.indexOf(t,e);for(;u>r;r++)if(n[r]===t)return r;return-1},A.lastIndexOf=function(n,t,e){if(null==n)return-1;var r=null!=e;if(x&&n.lastIndexOf===x)return r?n.lastIndexOf(t,e):n.lastIndexOf(t);for(var u=r?e:n.length;u--;)if(n[u]===t)return u;return-1},A.range=function(n,t,e){arguments.length<=1&&(t=n||0,n=0),e=arguments[2]||1;for(var r=Math.max(Math.ceil((t-n)/e),0),u=0,i=new Array(r);r>u;)i[u++]=n,n+=e;return i};var R=function(){};A.bind=function(n,t){var e,r;if(S&&n.bind===S)return S.apply(n,l.call(arguments,1));if(!A.isFunction(n))throw new TypeError;return e=l.call(arguments,2),r=function(){if(!(this instanceof r))return n.apply(t,e.concat(l.call(arguments)));R.prototype=n.prototype;var u=new R;R.prototype=null;var i=n.apply(u,e.concat(l.call(arguments)));return Object(i)===i?i:u}},A.partial=function(n){var t=l.call(arguments,1);return function(){return n.apply(this,t.concat(l.call(arguments)))}},A.bindAll=function(n){var t=l.call(arguments,1);if(0===t.length)throw new Error("bindAll must be passed function names");return E(t,function(t){n[t]=A.bind(n[t],n)}),n},A.memoize=function(n,t){var e={};return t||(t=A.identity),function(){var r=t.apply(this,arguments);return A.has(e,r)?e[r]:e[r]=n.apply(this,arguments)}},A.delay=function(n,t){var e=l.call(arguments,2);return setTimeout(function(){return n.apply(null,e)},t)},A.defer=function(n){return A.delay.apply(A,[n,1].concat(l.call(arguments,1)))},A.throttle=function(n,t,e){var r,u,i,o=null,a=0;e||(e={});var f=function(){a=e.leading===!1?0:new Date,o=null,i=n.apply(r,u)};return function(){var l=new Date;a||e.leading!==!1||(a=l);var c=t-(l-a);return r=this,u=arguments,0>=c?(clearTimeout(o),o=null,a=l,i=n.apply(r,u)):o||e.trailing===!1||(o=setTimeout(f,c)),i}},A.debounce=function(n,t,e){var r,u,i,o,a;return function(){i=this,u=arguments,o=new Date;var f=function(){var l=new Date-o;t>l?r=setTimeout(f,t-l):(r=null,e||(a=n.apply(i,u)))},l=e&&!r;return r||(r=setTimeout(f,t)),l&&(a=n.apply(i,u)),a}},A.once=function(n){var t,e=!1;return function(){return e?t:(e=!0,t=n.apply(this,arguments),n=null,t)}},A.wrap=function(n,t){return function(){var e=[n];return f.apply(e,arguments),t.apply(this,e)}},A.compose=function(){var n=arguments;return function(){for(var t=arguments,e=n.length-1;e>=0;e--)t=[n[e].apply(this,t)];return t[0]}},A.after=function(n,t){return function(){return--n<1?t.apply(this,arguments):void 0}},A.keys=j||function(n){if(n!==Object(n))throw new TypeError("Invalid object");var t=[];for(var e in n)A.has(n,e)&&t.push(e);return t},A.values=function(n){for(var t=A.keys(n),e=t.length,r=new Array(e),u=0;e>u;u++)r[u]=n[t[u]];return r},A.pairs=function(n){for(var t=A.keys(n),e=t.length,r=new Array(e),u=0;e>u;u++)r[u]=[t[u],n[t[u]]];return r},A.invert=function(n){for(var t={},e=A.keys(n),r=0,u=e.length;u>r;r++)t[n[e[r]]]=e[r];return t},A.functions=A.methods=function(n){var t=[];for(var e in n)A.isFunction(n[e])&&t.push(e);return t.sort()},A.extend=function(n){return E(l.call(arguments,1),function(t){if(t)for(var e in t)n[e]=t[e]}),n},A.pick=function(n){var t={},e=c.apply(i,l.call(arguments,1));return E(e,function(e){e in n&&(t[e]=n[e])}),t},A.omit=function(n){var t={},e=c.apply(i,l.call(arguments,1));for(var r in n)A.contains(e,r)||(t[r]=n[r]);return t},A.defaults=function(n){return E(l.call(arguments,1),function(t){if(t)for(var e in t)void 0===n[e]&&(n[e]=t[e])}),n},A.clone=function(n){return A.isObject(n)?A.isArray(n)?n.slice():A.extend({},n):n},A.tap=function(n,t){return t(n),n};var I=function(n,t,e,r){if(n===t)return 0!==n||1/n==1/t;if(null==n||null==t)return n===t;n instanceof A&&(n=n._wrapped),t instanceof A&&(t=t._wrapped);var u=s.call(n);if(u!=s.call(t))return!1;switch(u){case"[object String]":return n==String(t);case"[object Number]":return n!=+n?t!=+t:0==n?1/n==1/t:n==+t;case"[object Date]":case"[object Boolean]":return+n==+t;case"[object RegExp]":return n.source==t.source&&n.global==t.global&&n.multiline==t.multiline&&n.ignoreCase==t.ignoreCase}if("object"!=typeof n||"object"!=typeof t)return!1;for(var i=e.length;i--;)if(e[i]==n)return r[i]==t;var o=n.constructor,a=t.constructor;if(o!==a&&!(A.isFunction(o)&&o instanceof o&&A.isFunction(a)&&a instanceof a))return!1;e.push(n),r.push(t);var f=0,l=!0;if("[object Array]"==u){if(f=n.length,l=f==t.length)for(;f--&&(l=I(n[f],t[f],e,r)););}else{for(var c in n)if(A.has(n,c)&&(f++,!(l=A.has(t,c)&&I(n[c],t[c],e,r))))break;if(l){for(c in t)if(A.has(t,c)&&!f--)break;l=!f}}return e.pop(),r.pop(),l};A.isEqual=function(n,t){return I(n,t,[],[])},A.isEmpty=function(n){if(null==n)return!0;if(A.isArray(n)||A.isString(n))return 0===n.length;for(var t in n)if(A.has(n,t))return!1;return!0},A.isElement=function(n){return!(!n||1!==n.nodeType)},A.isArray=w||function(n){return"[object Array]"==s.call(n)},A.isObject=function(n){return n===Object(n)},E(["Arguments","Function","String","Number","Date","RegExp"],function(n){A["is"+n]=function(t){return s.call(t)=="[object "+n+"]"}}),A.isArguments(arguments)||(A.isArguments=function(n){return!(!n||!A.has(n,"callee"))}),"function"!=typeof/./&&(A.isFunction=function(n){return"function"==typeof n}),A.isFinite=function(n){return isFinite(n)&&!isNaN(parseFloat(n))},A.isNaN=function(n){return A.isNumber(n)&&n!=+n},A.isBoolean=function(n){return n===!0||n===!1||"[object Boolean]"==s.call(n)},A.isNull=function(n){return null===n},A.isUndefined=function(n){return void 0===n},A.has=function(n,t){return p.call(n,t)},A.noConflict=function(){return n._=r,this},A.identity=function(n){return n},A.times=function(n,t,e){for(var r=Array(Math.max(0,n)),u=0;n>u;u++)r[u]=t.call(e,u);return r},A.random=function(n,t){return null==t&&(t=n,n=0),n+Math.floor(Math.random()*(t-n+1))};var B={escape:{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#x27;"}};B.unescape=A.invert(B.escape);var F={escape:new RegExp("["+A.keys(B.escape).join("")+"]","g"),unescape:new RegExp("("+A.keys(B.unescape).join("|")+")","g")};A.each(["escape","unescape"],function(n){A[n]=function(t){return null==t?"":(""+t).replace(F[n],function(t){return B[n][t]})}}),A.result=function(n,t){if(null==n)return void 0;var e=n[t];return A.isFunction(e)?e.call(n):e},A.mixin=function(n){E(A.functions(n),function(t){var e=A[t]=n[t];A.prototype[t]=function(){var n=[this._wrapped];return f.apply(n,arguments),U.call(this,e.apply(A,n))}})};var M=0;A.uniqueId=function(n){var t=++M+"";return n?n+t:t},A.templateSettings={evaluate:/<%([\s\S]+?)%>/g,interpolate:/<%=([\s\S]+?)%>/g,escape:/<%-([\s\S]+?)%>/g};var L=/(.)^/,D={"'":"'","\\":"\\","\r":"r","\n":"n","	":"t","\u2028":"u2028","\u2029":"u2029"},q=/\\|'|\r|\n|\t|\u2028|\u2029/g;A.template=function(n,t,e){var r;e=A.defaults({},e,A.templateSettings);var u=new RegExp([(e.escape||L).source,(e.interpolate||L).source,(e.evaluate||L).source].join("|")+"|$","g"),i=0,o="__p+='";n.replace(u,function(t,e,r,u,a){return o+=n.slice(i,a).replace(q,function(n){return"\\"+D[n]}),e&&(o+="'+\n((__t=("+e+"))==null?'':_.escape(__t))+\n'"),r&&(o+="'+\n((__t=("+r+"))==null?'':__t)+\n'"),u&&(o+="';\n"+u+"\n__p+='"),i=a+t.length,t}),o+="';\n",e.variable||(o="with(obj||{}){\n"+o+"}\n"),o="var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};\n"+o+"return __p;\n";try{r=new Function(e.variable||"obj","_",o)}catch(a){throw a.source=o,a}if(t)return r(t,A);var f=function(n){return r.call(this,n,A)};return f.source="function("+(e.variable||"obj")+"){\n"+o+"}",f},A.chain=function(n){return A(n).chain()};var U=function(n){return this._chain?A(n).chain():n};A.mixin(A),E(["pop","push","reverse","shift","sort","splice","unshift"],function(n){var t=i[n];A.prototype[n]=function(){var e=this._wrapped;return t.apply(e,arguments),"shift"!=n&&"splice"!=n||0!==e.length||delete e[0],U.call(this,e)}}),E(["concat","join","slice"],function(n){var t=i[n];A.prototype[n]=function(){return U.call(this,t.apply(this._wrapped,arguments))}}),A.extend(A.prototype,{chain:function(){return this._chain=!0,this},value:function(){return this._wrapped}})}).call(this)}()},{}]},{},[1])(1)});
+(function(e){if("function"==typeof bootstrap)bootstrap("jxt",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeJXT=e}else"undefined"!=typeof window?window.JXT=e():global.JXT=e()})(function(){var define,ses,bootstrap,module,exports;
+return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
+"use strict";
+
+var _ = require('underscore');
+var core = require('./lib/core');
+var helpers = require('./lib/helpers');
+var types = require('./lib/types');
+
+module.exports = _.extend({}, core, helpers, types);
+
+},{"./lib/core":2,"./lib/helpers":3,"./lib/types":4,"underscore":5}],5:[function(require,module,exports){
+(function(){//     Underscore.js 1.5.2
+//     http://underscorejs.org
+//     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+//     Underscore may be freely distributed under the MIT license.
+
+(function() {
+
+  // Baseline setup
+  // --------------
+
+  // Establish the root object, `window` in the browser, or `exports` on the server.
+  var root = this;
+
+  // Save the previous value of the `_` variable.
+  var previousUnderscore = root._;
+
+  // Establish the object that gets returned to break out of a loop iteration.
+  var breaker = {};
+
+  // Save bytes in the minified (but not gzipped) version:
+  var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;
+
+  // Create quick reference variables for speed access to core prototypes.
+  var
+    push             = ArrayProto.push,
+    slice            = ArrayProto.slice,
+    concat           = ArrayProto.concat,
+    toString         = ObjProto.toString,
+    hasOwnProperty   = ObjProto.hasOwnProperty;
+
+  // All **ECMAScript 5** native function implementations that we hope to use
+  // are declared here.
+  var
+    nativeForEach      = ArrayProto.forEach,
+    nativeMap          = ArrayProto.map,
+    nativeReduce       = ArrayProto.reduce,
+    nativeReduceRight  = ArrayProto.reduceRight,
+    nativeFilter       = ArrayProto.filter,
+    nativeEvery        = ArrayProto.every,
+    nativeSome         = ArrayProto.some,
+    nativeIndexOf      = ArrayProto.indexOf,
+    nativeLastIndexOf  = ArrayProto.lastIndexOf,
+    nativeIsArray      = Array.isArray,
+    nativeKeys         = Object.keys,
+    nativeBind         = FuncProto.bind;
+
+  // Create a safe reference to the Underscore object for use below.
+  var _ = function(obj) {
+    if (obj instanceof _) return obj;
+    if (!(this instanceof _)) return new _(obj);
+    this._wrapped = obj;
+  };
+
+  // Export the Underscore object for **Node.js**, with
+  // backwards-compatibility for the old `require()` API. If we're in
+  // the browser, add `_` as a global object via a string identifier,
+  // for Closure Compiler "advanced" mode.
+  if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = _;
+    }
+    exports._ = _;
+  } else {
+    root._ = _;
+  }
+
+  // Current version.
+  _.VERSION = '1.5.2';
+
+  // Collection Functions
+  // --------------------
+
+  // The cornerstone, an `each` implementation, aka `forEach`.
+  // Handles objects with the built-in `forEach`, arrays, and raw objects.
+  // Delegates to **ECMAScript 5**'s native `forEach` if available.
+  var each = _.each = _.forEach = function(obj, iterator, context) {
+    if (obj == null) return;
+    if (nativeForEach && obj.forEach === nativeForEach) {
+      obj.forEach(iterator, context);
+    } else if (obj.length === +obj.length) {
+      for (var i = 0, length = obj.length; i < length; i++) {
+        if (iterator.call(context, obj[i], i, obj) === breaker) return;
+      }
+    } else {
+      var keys = _.keys(obj);
+      for (var i = 0, length = keys.length; i < length; i++) {
+        if (iterator.call(context, obj[keys[i]], keys[i], obj) === breaker) return;
+      }
+    }
+  };
+
+  // Return the results of applying the iterator to each element.
+  // Delegates to **ECMAScript 5**'s native `map` if available.
+  _.map = _.collect = function(obj, iterator, context) {
+    var results = [];
+    if (obj == null) return results;
+    if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
+    each(obj, function(value, index, list) {
+      results.push(iterator.call(context, value, index, list));
+    });
+    return results;
+  };
+
+  var reduceError = 'Reduce of empty array with no initial value';
+
+  // **Reduce** builds up a single result from a list of values, aka `inject`,
+  // or `foldl`. Delegates to **ECMAScript 5**'s native `reduce` if available.
+  _.reduce = _.foldl = _.inject = function(obj, iterator, memo, context) {
+    var initial = arguments.length > 2;
+    if (obj == null) obj = [];
+    if (nativeReduce && obj.reduce === nativeReduce) {
+      if (context) iterator = _.bind(iterator, context);
+      return initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
+    }
+    each(obj, function(value, index, list) {
+      if (!initial) {
+        memo = value;
+        initial = true;
+      } else {
+        memo = iterator.call(context, memo, value, index, list);
+      }
+    });
+    if (!initial) throw new TypeError(reduceError);
+    return memo;
+  };
+
+  // The right-associative version of reduce, also known as `foldr`.
+  // Delegates to **ECMAScript 5**'s native `reduceRight` if available.
+  _.reduceRight = _.foldr = function(obj, iterator, memo, context) {
+    var initial = arguments.length > 2;
+    if (obj == null) obj = [];
+    if (nativeReduceRight && obj.reduceRight === nativeReduceRight) {
+      if (context) iterator = _.bind(iterator, context);
+      return initial ? obj.reduceRight(iterator, memo) : obj.reduceRight(iterator);
+    }
+    var length = obj.length;
+    if (length !== +length) {
+      var keys = _.keys(obj);
+      length = keys.length;
+    }
+    each(obj, function(value, index, list) {
+      index = keys ? keys[--length] : --length;
+      if (!initial) {
+        memo = obj[index];
+        initial = true;
+      } else {
+        memo = iterator.call(context, memo, obj[index], index, list);
+      }
+    });
+    if (!initial) throw new TypeError(reduceError);
+    return memo;
+  };
+
+  // Return the first value which passes a truth test. Aliased as `detect`.
+  _.find = _.detect = function(obj, iterator, context) {
+    var result;
+    any(obj, function(value, index, list) {
+      if (iterator.call(context, value, index, list)) {
+        result = value;
+        return true;
+      }
+    });
+    return result;
+  };
+
+  // Return all the elements that pass a truth test.
+  // Delegates to **ECMAScript 5**'s native `filter` if available.
+  // Aliased as `select`.
+  _.filter = _.select = function(obj, iterator, context) {
+    var results = [];
+    if (obj == null) return results;
+    if (nativeFilter && obj.filter === nativeFilter) return obj.filter(iterator, context);
+    each(obj, function(value, index, list) {
+      if (iterator.call(context, value, index, list)) results.push(value);
+    });
+    return results;
+  };
+
+  // Return all the elements for which a truth test fails.
+  _.reject = function(obj, iterator, context) {
+    return _.filter(obj, function(value, index, list) {
+      return !iterator.call(context, value, index, list);
+    }, context);
+  };
+
+  // Determine whether all of the elements match a truth test.
+  // Delegates to **ECMAScript 5**'s native `every` if available.
+  // Aliased as `all`.
+  _.every = _.all = function(obj, iterator, context) {
+    iterator || (iterator = _.identity);
+    var result = true;
+    if (obj == null) return result;
+    if (nativeEvery && obj.every === nativeEvery) return obj.every(iterator, context);
+    each(obj, function(value, index, list) {
+      if (!(result = result && iterator.call(context, value, index, list))) return breaker;
+    });
+    return !!result;
+  };
+
+  // Determine if at least one element in the object matches a truth test.
+  // Delegates to **ECMAScript 5**'s native `some` if available.
+  // Aliased as `any`.
+  var any = _.some = _.any = function(obj, iterator, context) {
+    iterator || (iterator = _.identity);
+    var result = false;
+    if (obj == null) return result;
+    if (nativeSome && obj.some === nativeSome) return obj.some(iterator, context);
+    each(obj, function(value, index, list) {
+      if (result || (result = iterator.call(context, value, index, list))) return breaker;
+    });
+    return !!result;
+  };
+
+  // Determine if the array or object contains a given value (using `===`).
+  // Aliased as `include`.
+  _.contains = _.include = function(obj, target) {
+    if (obj == null) return false;
+    if (nativeIndexOf && obj.indexOf === nativeIndexOf) return obj.indexOf(target) != -1;
+    return any(obj, function(value) {
+      return value === target;
+    });
+  };
+
+  // Invoke a method (with arguments) on every item in a collection.
+  _.invoke = function(obj, method) {
+    var args = slice.call(arguments, 2);
+    var isFunc = _.isFunction(method);
+    return _.map(obj, function(value) {
+      return (isFunc ? method : value[method]).apply(value, args);
+    });
+  };
+
+  // Convenience version of a common use case of `map`: fetching a property.
+  _.pluck = function(obj, key) {
+    return _.map(obj, function(value){ return value[key]; });
+  };
+
+  // Convenience version of a common use case of `filter`: selecting only objects
+  // containing specific `key:value` pairs.
+  _.where = function(obj, attrs, first) {
+    if (_.isEmpty(attrs)) return first ? void 0 : [];
+    return _[first ? 'find' : 'filter'](obj, function(value) {
+      for (var key in attrs) {
+        if (attrs[key] !== value[key]) return false;
+      }
+      return true;
+    });
+  };
+
+  // Convenience version of a common use case of `find`: getting the first object
+  // containing specific `key:value` pairs.
+  _.findWhere = function(obj, attrs) {
+    return _.where(obj, attrs, true);
+  };
+
+  // Return the maximum element or (element-based computation).
+  // Can't optimize arrays of integers longer than 65,535 elements.
+  // See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
+  _.max = function(obj, iterator, context) {
+    if (!iterator && _.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
+      return Math.max.apply(Math, obj);
+    }
+    if (!iterator && _.isEmpty(obj)) return -Infinity;
+    var result = {computed : -Infinity, value: -Infinity};
+    each(obj, function(value, index, list) {
+      var computed = iterator ? iterator.call(context, value, index, list) : value;
+      computed > result.computed && (result = {value : value, computed : computed});
+    });
+    return result.value;
+  };
+
+  // Return the minimum element (or element-based computation).
+  _.min = function(obj, iterator, context) {
+    if (!iterator && _.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
+      return Math.min.apply(Math, obj);
+    }
+    if (!iterator && _.isEmpty(obj)) return Infinity;
+    var result = {computed : Infinity, value: Infinity};
+    each(obj, function(value, index, list) {
+      var computed = iterator ? iterator.call(context, value, index, list) : value;
+      computed < result.computed && (result = {value : value, computed : computed});
+    });
+    return result.value;
+  };
+
+  // Shuffle an array, using the modern version of the 
+  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
+  _.shuffle = function(obj) {
+    var rand;
+    var index = 0;
+    var shuffled = [];
+    each(obj, function(value) {
+      rand = _.random(index++);
+      shuffled[index - 1] = shuffled[rand];
+      shuffled[rand] = value;
+    });
+    return shuffled;
+  };
+
+  // Sample **n** random values from an array.
+  // If **n** is not specified, returns a single random element from the array.
+  // The internal `guard` argument allows it to work with `map`.
+  _.sample = function(obj, n, guard) {
+    if (arguments.length < 2 || guard) {
+      return obj[_.random(obj.length - 1)];
+    }
+    return _.shuffle(obj).slice(0, Math.max(0, n));
+  };
+
+  // An internal function to generate lookup iterators.
+  var lookupIterator = function(value) {
+    return _.isFunction(value) ? value : function(obj){ return obj[value]; };
+  };
+
+  // Sort the object's values by a criterion produced by an iterator.
+  _.sortBy = function(obj, value, context) {
+    var iterator = lookupIterator(value);
+    return _.pluck(_.map(obj, function(value, index, list) {
+      return {
+        value: value,
+        index: index,
+        criteria: iterator.call(context, value, index, list)
+      };
+    }).sort(function(left, right) {
+      var a = left.criteria;
+      var b = right.criteria;
+      if (a !== b) {
+        if (a > b || a === void 0) return 1;
+        if (a < b || b === void 0) return -1;
+      }
+      return left.index - right.index;
+    }), 'value');
+  };
+
+  // An internal function used for aggregate "group by" operations.
+  var group = function(behavior) {
+    return function(obj, value, context) {
+      var result = {};
+      var iterator = value == null ? _.identity : lookupIterator(value);
+      each(obj, function(value, index) {
+        var key = iterator.call(context, value, index, obj);
+        behavior(result, key, value);
+      });
+      return result;
+    };
+  };
+
+  // Groups the object's values by a criterion. Pass either a string attribute
+  // to group by, or a function that returns the criterion.
+  _.groupBy = group(function(result, key, value) {
+    (_.has(result, key) ? result[key] : (result[key] = [])).push(value);
+  });
+
+  // Indexes the object's values by a criterion, similar to `groupBy`, but for
+  // when you know that your index values will be unique.
+  _.indexBy = group(function(result, key, value) {
+    result[key] = value;
+  });
+
+  // Counts instances of an object that group by a certain criterion. Pass
+  // either a string attribute to count by, or a function that returns the
+  // criterion.
+  _.countBy = group(function(result, key) {
+    _.has(result, key) ? result[key]++ : result[key] = 1;
+  });
+
+  // Use a comparator function to figure out the smallest index at which
+  // an object should be inserted so as to maintain order. Uses binary search.
+  _.sortedIndex = function(array, obj, iterator, context) {
+    iterator = iterator == null ? _.identity : lookupIterator(iterator);
+    var value = iterator.call(context, obj);
+    var low = 0, high = array.length;
+    while (low < high) {
+      var mid = (low + high) >>> 1;
+      iterator.call(context, array[mid]) < value ? low = mid + 1 : high = mid;
+    }
+    return low;
+  };
+
+  // Safely create a real, live array from anything iterable.
+  _.toArray = function(obj) {
+    if (!obj) return [];
+    if (_.isArray(obj)) return slice.call(obj);
+    if (obj.length === +obj.length) return _.map(obj, _.identity);
+    return _.values(obj);
+  };
+
+  // Return the number of elements in an object.
+  _.size = function(obj) {
+    if (obj == null) return 0;
+    return (obj.length === +obj.length) ? obj.length : _.keys(obj).length;
+  };
+
+  // Array Functions
+  // ---------------
+
+  // Get the first element of an array. Passing **n** will return the first N
+  // values in the array. Aliased as `head` and `take`. The **guard** check
+  // allows it to work with `_.map`.
+  _.first = _.head = _.take = function(array, n, guard) {
+    if (array == null) return void 0;
+    return (n == null) || guard ? array[0] : slice.call(array, 0, n);
+  };
+
+  // Returns everything but the last entry of the array. Especially useful on
+  // the arguments object. Passing **n** will return all the values in
+  // the array, excluding the last N. The **guard** check allows it to work with
+  // `_.map`.
+  _.initial = function(array, n, guard) {
+    return slice.call(array, 0, array.length - ((n == null) || guard ? 1 : n));
+  };
+
+  // Get the last element of an array. Passing **n** will return the last N
+  // values in the array. The **guard** check allows it to work with `_.map`.
+  _.last = function(array, n, guard) {
+    if (array == null) return void 0;
+    if ((n == null) || guard) {
+      return array[array.length - 1];
+    } else {
+      return slice.call(array, Math.max(array.length - n, 0));
+    }
+  };
+
+  // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
+  // Especially useful on the arguments object. Passing an **n** will return
+  // the rest N values in the array. The **guard**
+  // check allows it to work with `_.map`.
+  _.rest = _.tail = _.drop = function(array, n, guard) {
+    return slice.call(array, (n == null) || guard ? 1 : n);
+  };
+
+  // Trim out all falsy values from an array.
+  _.compact = function(array) {
+    return _.filter(array, _.identity);
+  };
+
+  // Internal implementation of a recursive `flatten` function.
+  var flatten = function(input, shallow, output) {
+    if (shallow && _.every(input, _.isArray)) {
+      return concat.apply(output, input);
+    }
+    each(input, function(value) {
+      if (_.isArray(value) || _.isArguments(value)) {
+        shallow ? push.apply(output, value) : flatten(value, shallow, output);
+      } else {
+        output.push(value);
+      }
+    });
+    return output;
+  };
+
+  // Flatten out an array, either recursively (by default), or just one level.
+  _.flatten = function(array, shallow) {
+    return flatten(array, shallow, []);
+  };
+
+  // Return a version of the array that does not contain the specified value(s).
+  _.without = function(array) {
+    return _.difference(array, slice.call(arguments, 1));
+  };
+
+  // Produce a duplicate-free version of the array. If the array has already
+  // been sorted, you have the option of using a faster algorithm.
+  // Aliased as `unique`.
+  _.uniq = _.unique = function(array, isSorted, iterator, context) {
+    if (_.isFunction(isSorted)) {
+      context = iterator;
+      iterator = isSorted;
+      isSorted = false;
+    }
+    var initial = iterator ? _.map(array, iterator, context) : array;
+    var results = [];
+    var seen = [];
+    each(initial, function(value, index) {
+      if (isSorted ? (!index || seen[seen.length - 1] !== value) : !_.contains(seen, value)) {
+        seen.push(value);
+        results.push(array[index]);
+      }
+    });
+    return results;
+  };
+
+  // Produce an array that contains the union: each distinct element from all of
+  // the passed-in arrays.
+  _.union = function() {
+    return _.uniq(_.flatten(arguments, true));
+  };
+
+  // Produce an array that contains every item shared between all the
+  // passed-in arrays.
+  _.intersection = function(array) {
+    var rest = slice.call(arguments, 1);
+    return _.filter(_.uniq(array), function(item) {
+      return _.every(rest, function(other) {
+        return _.indexOf(other, item) >= 0;
+      });
+    });
+  };
+
+  // Take the difference between one array and a number of other arrays.
+  // Only the elements present in just the first array will remain.
+  _.difference = function(array) {
+    var rest = concat.apply(ArrayProto, slice.call(arguments, 1));
+    return _.filter(array, function(value){ return !_.contains(rest, value); });
+  };
+
+  // Zip together multiple lists into a single array -- elements that share
+  // an index go together.
+  _.zip = function() {
+    var length = _.max(_.pluck(arguments, "length").concat(0));
+    var results = new Array(length);
+    for (var i = 0; i < length; i++) {
+      results[i] = _.pluck(arguments, '' + i);
+    }
+    return results;
+  };
+
+  // Converts lists into objects. Pass either a single array of `[key, value]`
+  // pairs, or two parallel arrays of the same length -- one of keys, and one of
+  // the corresponding values.
+  _.object = function(list, values) {
+    if (list == null) return {};
+    var result = {};
+    for (var i = 0, length = list.length; i < length; i++) {
+      if (values) {
+        result[list[i]] = values[i];
+      } else {
+        result[list[i][0]] = list[i][1];
+      }
+    }
+    return result;
+  };
+
+  // If the browser doesn't supply us with indexOf (I'm looking at you, **MSIE**),
+  // we need this function. Return the position of the first occurrence of an
+  // item in an array, or -1 if the item is not included in the array.
+  // Delegates to **ECMAScript 5**'s native `indexOf` if available.
+  // If the array is large and already in sort order, pass `true`
+  // for **isSorted** to use binary search.
+  _.indexOf = function(array, item, isSorted) {
+    if (array == null) return -1;
+    var i = 0, length = array.length;
+    if (isSorted) {
+      if (typeof isSorted == 'number') {
+        i = (isSorted < 0 ? Math.max(0, length + isSorted) : isSorted);
+      } else {
+        i = _.sortedIndex(array, item);
+        return array[i] === item ? i : -1;
+      }
+    }
+    if (nativeIndexOf && array.indexOf === nativeIndexOf) return array.indexOf(item, isSorted);
+    for (; i < length; i++) if (array[i] === item) return i;
+    return -1;
+  };
+
+  // Delegates to **ECMAScript 5**'s native `lastIndexOf` if available.
+  _.lastIndexOf = function(array, item, from) {
+    if (array == null) return -1;
+    var hasIndex = from != null;
+    if (nativeLastIndexOf && array.lastIndexOf === nativeLastIndexOf) {
+      return hasIndex ? array.lastIndexOf(item, from) : array.lastIndexOf(item);
+    }
+    var i = (hasIndex ? from : array.length);
+    while (i--) if (array[i] === item) return i;
+    return -1;
+  };
+
+  // Generate an integer Array containing an arithmetic progression. A port of
+  // the native Python `range()` function. See
+  // [the Python documentation](http://docs.python.org/library/functions.html#range).
+  _.range = function(start, stop, step) {
+    if (arguments.length <= 1) {
+      stop = start || 0;
+      start = 0;
+    }
+    step = arguments[2] || 1;
+
+    var length = Math.max(Math.ceil((stop - start) / step), 0);
+    var idx = 0;
+    var range = new Array(length);
+
+    while(idx < length) {
+      range[idx++] = start;
+      start += step;
+    }
+
+    return range;
+  };
+
+  // Function (ahem) Functions
+  // ------------------
+
+  // Reusable constructor function for prototype setting.
+  var ctor = function(){};
+
+  // Create a function bound to a given object (assigning `this`, and arguments,
+  // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
+  // available.
+  _.bind = function(func, context) {
+    var args, bound;
+    if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
+    if (!_.isFunction(func)) throw new TypeError;
+    args = slice.call(arguments, 2);
+    return bound = function() {
+      if (!(this instanceof bound)) return func.apply(context, args.concat(slice.call(arguments)));
+      ctor.prototype = func.prototype;
+      var self = new ctor;
+      ctor.prototype = null;
+      var result = func.apply(self, args.concat(slice.call(arguments)));
+      if (Object(result) === result) return result;
+      return self;
+    };
+  };
+
+  // Partially apply a function by creating a version that has had some of its
+  // arguments pre-filled, without changing its dynamic `this` context.
+  _.partial = function(func) {
+    var args = slice.call(arguments, 1);
+    return function() {
+      return func.apply(this, args.concat(slice.call(arguments)));
+    };
+  };
+
+  // Bind all of an object's methods to that object. Useful for ensuring that
+  // all callbacks defined on an object belong to it.
+  _.bindAll = function(obj) {
+    var funcs = slice.call(arguments, 1);
+    if (funcs.length === 0) throw new Error("bindAll must be passed function names");
+    each(funcs, function(f) { obj[f] = _.bind(obj[f], obj); });
+    return obj;
+  };
+
+  // Memoize an expensive function by storing its results.
+  _.memoize = function(func, hasher) {
+    var memo = {};
+    hasher || (hasher = _.identity);
+    return function() {
+      var key = hasher.apply(this, arguments);
+      return _.has(memo, key) ? memo[key] : (memo[key] = func.apply(this, arguments));
+    };
+  };
+
+  // Delays a function for the given number of milliseconds, and then calls
+  // it with the arguments supplied.
+  _.delay = function(func, wait) {
+    var args = slice.call(arguments, 2);
+    return setTimeout(function(){ return func.apply(null, args); }, wait);
+  };
+
+  // Defers a function, scheduling it to run after the current call stack has
+  // cleared.
+  _.defer = function(func) {
+    return _.delay.apply(_, [func, 1].concat(slice.call(arguments, 1)));
+  };
+
+  // Returns a function, that, when invoked, will only be triggered at most once
+  // during a given window of time. Normally, the throttled function will run
+  // as much as it can, without ever going more than once per `wait` duration;
+  // but if you'd like to disable the execution on the leading edge, pass
+  // `{leading: false}`. To disable execution on the trailing edge, ditto.
+  _.throttle = function(func, wait, options) {
+    var context, args, result;
+    var timeout = null;
+    var previous = 0;
+    options || (options = {});
+    var later = function() {
+      previous = options.leading === false ? 0 : new Date;
+      timeout = null;
+      result = func.apply(context, args);
+    };
+    return function() {
+      var now = new Date;
+      if (!previous && options.leading === false) previous = now;
+      var remaining = wait - (now - previous);
+      context = this;
+      args = arguments;
+      if (remaining <= 0) {
+        clearTimeout(timeout);
+        timeout = null;
+        previous = now;
+        result = func.apply(context, args);
+      } else if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(later, remaining);
+      }
+      return result;
+    };
+  };
+
+  // Returns a function, that, as long as it continues to be invoked, will not
+  // be triggered. The function will be called after it stops being called for
+  // N milliseconds. If `immediate` is passed, trigger the function on the
+  // leading edge, instead of the trailing.
+  _.debounce = function(func, wait, immediate) {
+    var timeout, args, context, timestamp, result;
+    return function() {
+      context = this;
+      args = arguments;
+      timestamp = new Date();
+      var later = function() {
+        var last = (new Date()) - timestamp;
+        if (last < wait) {
+          timeout = setTimeout(later, wait - last);
+        } else {
+          timeout = null;
+          if (!immediate) result = func.apply(context, args);
+        }
+      };
+      var callNow = immediate && !timeout;
+      if (!timeout) {
+        timeout = setTimeout(later, wait);
+      }
+      if (callNow) result = func.apply(context, args);
+      return result;
+    };
+  };
+
+  // Returns a function that will be executed at most one time, no matter how
+  // often you call it. Useful for lazy initialization.
+  _.once = function(func) {
+    var ran = false, memo;
+    return function() {
+      if (ran) return memo;
+      ran = true;
+      memo = func.apply(this, arguments);
+      func = null;
+      return memo;
+    };
+  };
+
+  // Returns the first function passed as an argument to the second,
+  // allowing you to adjust arguments, run code before and after, and
+  // conditionally execute the original function.
+  _.wrap = function(func, wrapper) {
+    return function() {
+      var args = [func];
+      push.apply(args, arguments);
+      return wrapper.apply(this, args);
+    };
+  };
+
+  // Returns a function that is the composition of a list of functions, each
+  // consuming the return value of the function that follows.
+  _.compose = function() {
+    var funcs = arguments;
+    return function() {
+      var args = arguments;
+      for (var i = funcs.length - 1; i >= 0; i--) {
+        args = [funcs[i].apply(this, args)];
+      }
+      return args[0];
+    };
+  };
+
+  // Returns a function that will only be executed after being called N times.
+  _.after = function(times, func) {
+    return function() {
+      if (--times < 1) {
+        return func.apply(this, arguments);
+      }
+    };
+  };
+
+  // Object Functions
+  // ----------------
+
+  // Retrieve the names of an object's properties.
+  // Delegates to **ECMAScript 5**'s native `Object.keys`
+  _.keys = nativeKeys || function(obj) {
+    if (obj !== Object(obj)) throw new TypeError('Invalid object');
+    var keys = [];
+    for (var key in obj) if (_.has(obj, key)) keys.push(key);
+    return keys;
+  };
+
+  // Retrieve the values of an object's properties.
+  _.values = function(obj) {
+    var keys = _.keys(obj);
+    var length = keys.length;
+    var values = new Array(length);
+    for (var i = 0; i < length; i++) {
+      values[i] = obj[keys[i]];
+    }
+    return values;
+  };
+
+  // Convert an object into a list of `[key, value]` pairs.
+  _.pairs = function(obj) {
+    var keys = _.keys(obj);
+    var length = keys.length;
+    var pairs = new Array(length);
+    for (var i = 0; i < length; i++) {
+      pairs[i] = [keys[i], obj[keys[i]]];
+    }
+    return pairs;
+  };
+
+  // Invert the keys and values of an object. The values must be serializable.
+  _.invert = function(obj) {
+    var result = {};
+    var keys = _.keys(obj);
+    for (var i = 0, length = keys.length; i < length; i++) {
+      result[obj[keys[i]]] = keys[i];
+    }
+    return result;
+  };
+
+  // Return a sorted list of the function names available on the object.
+  // Aliased as `methods`
+  _.functions = _.methods = function(obj) {
+    var names = [];
+    for (var key in obj) {
+      if (_.isFunction(obj[key])) names.push(key);
+    }
+    return names.sort();
+  };
+
+  // Extend a given object with all the properties in passed-in object(s).
+  _.extend = function(obj) {
+    each(slice.call(arguments, 1), function(source) {
+      if (source) {
+        for (var prop in source) {
+          obj[prop] = source[prop];
+        }
+      }
+    });
+    return obj;
+  };
+
+  // Return a copy of the object only containing the whitelisted properties.
+  _.pick = function(obj) {
+    var copy = {};
+    var keys = concat.apply(ArrayProto, slice.call(arguments, 1));
+    each(keys, function(key) {
+      if (key in obj) copy[key] = obj[key];
+    });
+    return copy;
+  };
+
+   // Return a copy of the object without the blacklisted properties.
+  _.omit = function(obj) {
+    var copy = {};
+    var keys = concat.apply(ArrayProto, slice.call(arguments, 1));
+    for (var key in obj) {
+      if (!_.contains(keys, key)) copy[key] = obj[key];
+    }
+    return copy;
+  };
+
+  // Fill in a given object with default properties.
+  _.defaults = function(obj) {
+    each(slice.call(arguments, 1), function(source) {
+      if (source) {
+        for (var prop in source) {
+          if (obj[prop] === void 0) obj[prop] = source[prop];
+        }
+      }
+    });
+    return obj;
+  };
+
+  // Create a (shallow-cloned) duplicate of an object.
+  _.clone = function(obj) {
+    if (!_.isObject(obj)) return obj;
+    return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+  };
+
+  // Invokes interceptor with the obj, and then returns obj.
+  // The primary purpose of this method is to "tap into" a method chain, in
+  // order to perform operations on intermediate results within the chain.
+  _.tap = function(obj, interceptor) {
+    interceptor(obj);
+    return obj;
+  };
+
+  // Internal recursive comparison function for `isEqual`.
+  var eq = function(a, b, aStack, bStack) {
+    // Identical objects are equal. `0 === -0`, but they aren't identical.
+    // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+    if (a === b) return a !== 0 || 1 / a == 1 / b;
+    // A strict comparison is necessary because `null == undefined`.
+    if (a == null || b == null) return a === b;
+    // Unwrap any wrapped objects.
+    if (a instanceof _) a = a._wrapped;
+    if (b instanceof _) b = b._wrapped;
+    // Compare `[[Class]]` names.
+    var className = toString.call(a);
+    if (className != toString.call(b)) return false;
+    switch (className) {
+      // Strings, numbers, dates, and booleans are compared by value.
+      case '[object String]':
+        // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
+        // equivalent to `new String("5")`.
+        return a == String(b);
+      case '[object Number]':
+        // `NaN`s are equivalent, but non-reflexive. An `egal` comparison is performed for
+        // other numeric values.
+        return a != +a ? b != +b : (a == 0 ? 1 / a == 1 / b : a == +b);
+      case '[object Date]':
+      case '[object Boolean]':
+        // Coerce dates and booleans to numeric primitive values. Dates are compared by their
+        // millisecond representations. Note that invalid dates with millisecond representations
+        // of `NaN` are not equivalent.
+        return +a == +b;
+      // RegExps are compared by their source patterns and flags.
+      case '[object RegExp]':
+        return a.source == b.source &&
+               a.global == b.global &&
+               a.multiline == b.multiline &&
+               a.ignoreCase == b.ignoreCase;
+    }
+    if (typeof a != 'object' || typeof b != 'object') return false;
+    // Assume equality for cyclic structures. The algorithm for detecting cyclic
+    // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+    var length = aStack.length;
+    while (length--) {
+      // Linear search. Performance is inversely proportional to the number of
+      // unique nested structures.
+      if (aStack[length] == a) return bStack[length] == b;
+    }
+    // Objects with different constructors are not equivalent, but `Object`s
+    // from different frames are.
+    var aCtor = a.constructor, bCtor = b.constructor;
+    if (aCtor !== bCtor && !(_.isFunction(aCtor) && (aCtor instanceof aCtor) &&
+                             _.isFunction(bCtor) && (bCtor instanceof bCtor))) {
+      return false;
+    }
+    // Add the first object to the stack of traversed objects.
+    aStack.push(a);
+    bStack.push(b);
+    var size = 0, result = true;
+    // Recursively compare objects and arrays.
+    if (className == '[object Array]') {
+      // Compare array lengths to determine if a deep comparison is necessary.
+      size = a.length;
+      result = size == b.length;
+      if (result) {
+        // Deep compare the contents, ignoring non-numeric properties.
+        while (size--) {
+          if (!(result = eq(a[size], b[size], aStack, bStack))) break;
+        }
+      }
+    } else {
+      // Deep compare objects.
+      for (var key in a) {
+        if (_.has(a, key)) {
+          // Count the expected number of properties.
+          size++;
+          // Deep compare each member.
+          if (!(result = _.has(b, key) && eq(a[key], b[key], aStack, bStack))) break;
+        }
+      }
+      // Ensure that both objects contain the same number of properties.
+      if (result) {
+        for (key in b) {
+          if (_.has(b, key) && !(size--)) break;
+        }
+        result = !size;
+      }
+    }
+    // Remove the first object from the stack of traversed objects.
+    aStack.pop();
+    bStack.pop();
+    return result;
+  };
+
+  // Perform a deep comparison to check if two objects are equal.
+  _.isEqual = function(a, b) {
+    return eq(a, b, [], []);
+  };
+
+  // Is a given array, string, or object empty?
+  // An "empty" object has no enumerable own-properties.
+  _.isEmpty = function(obj) {
+    if (obj == null) return true;
+    if (_.isArray(obj) || _.isString(obj)) return obj.length === 0;
+    for (var key in obj) if (_.has(obj, key)) return false;
+    return true;
+  };
+
+  // Is a given value a DOM element?
+  _.isElement = function(obj) {
+    return !!(obj && obj.nodeType === 1);
+  };
+
+  // Is a given value an array?
+  // Delegates to ECMA5's native Array.isArray
+  _.isArray = nativeIsArray || function(obj) {
+    return toString.call(obj) == '[object Array]';
+  };
+
+  // Is a given variable an object?
+  _.isObject = function(obj) {
+    return obj === Object(obj);
+  };
+
+  // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp.
+  each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'], function(name) {
+    _['is' + name] = function(obj) {
+      return toString.call(obj) == '[object ' + name + ']';
+    };
+  });
+
+  // Define a fallback version of the method in browsers (ahem, IE), where
+  // there isn't any inspectable "Arguments" type.
+  if (!_.isArguments(arguments)) {
+    _.isArguments = function(obj) {
+      return !!(obj && _.has(obj, 'callee'));
+    };
+  }
+
+  // Optimize `isFunction` if appropriate.
+  if (typeof (/./) !== 'function') {
+    _.isFunction = function(obj) {
+      return typeof obj === 'function';
+    };
+  }
+
+  // Is a given object a finite number?
+  _.isFinite = function(obj) {
+    return isFinite(obj) && !isNaN(parseFloat(obj));
+  };
+
+  // Is the given value `NaN`? (NaN is the only number which does not equal itself).
+  _.isNaN = function(obj) {
+    return _.isNumber(obj) && obj != +obj;
+  };
+
+  // Is a given value a boolean?
+  _.isBoolean = function(obj) {
+    return obj === true || obj === false || toString.call(obj) == '[object Boolean]';
+  };
+
+  // Is a given value equal to null?
+  _.isNull = function(obj) {
+    return obj === null;
+  };
+
+  // Is a given variable undefined?
+  _.isUndefined = function(obj) {
+    return obj === void 0;
+  };
+
+  // Shortcut function for checking if an object has a given property directly
+  // on itself (in other words, not on a prototype).
+  _.has = function(obj, key) {
+    return hasOwnProperty.call(obj, key);
+  };
+
+  // Utility Functions
+  // -----------------
+
+  // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
+  // previous owner. Returns a reference to the Underscore object.
+  _.noConflict = function() {
+    root._ = previousUnderscore;
+    return this;
+  };
+
+  // Keep the identity function around for default iterators.
+  _.identity = function(value) {
+    return value;
+  };
+
+  // Run a function **n** times.
+  _.times = function(n, iterator, context) {
+    var accum = Array(Math.max(0, n));
+    for (var i = 0; i < n; i++) accum[i] = iterator.call(context, i);
+    return accum;
+  };
+
+  // Return a random integer between min and max (inclusive).
+  _.random = function(min, max) {
+    if (max == null) {
+      max = min;
+      min = 0;
+    }
+    return min + Math.floor(Math.random() * (max - min + 1));
+  };
+
+  // List of HTML entities for escaping.
+  var entityMap = {
+    escape: {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;'
+    }
+  };
+  entityMap.unescape = _.invert(entityMap.escape);
+
+  // Regexes containing the keys and values listed immediately above.
+  var entityRegexes = {
+    escape:   new RegExp('[' + _.keys(entityMap.escape).join('') + ']', 'g'),
+    unescape: new RegExp('(' + _.keys(entityMap.unescape).join('|') + ')', 'g')
+  };
+
+  // Functions for escaping and unescaping strings to/from HTML interpolation.
+  _.each(['escape', 'unescape'], function(method) {
+    _[method] = function(string) {
+      if (string == null) return '';
+      return ('' + string).replace(entityRegexes[method], function(match) {
+        return entityMap[method][match];
+      });
+    };
+  });
+
+  // If the value of the named `property` is a function then invoke it with the
+  // `object` as context; otherwise, return it.
+  _.result = function(object, property) {
+    if (object == null) return void 0;
+    var value = object[property];
+    return _.isFunction(value) ? value.call(object) : value;
+  };
+
+  // Add your own custom functions to the Underscore object.
+  _.mixin = function(obj) {
+    each(_.functions(obj), function(name) {
+      var func = _[name] = obj[name];
+      _.prototype[name] = function() {
+        var args = [this._wrapped];
+        push.apply(args, arguments);
+        return result.call(this, func.apply(_, args));
+      };
+    });
+  };
+
+  // Generate a unique integer id (unique within the entire client session).
+  // Useful for temporary DOM ids.
+  var idCounter = 0;
+  _.uniqueId = function(prefix) {
+    var id = ++idCounter + '';
+    return prefix ? prefix + id : id;
+  };
+
+  // By default, Underscore uses ERB-style template delimiters, change the
+  // following template settings to use alternative delimiters.
+  _.templateSettings = {
+    evaluate    : /<%([\s\S]+?)%>/g,
+    interpolate : /<%=([\s\S]+?)%>/g,
+    escape      : /<%-([\s\S]+?)%>/g
+  };
+
+  // When customizing `templateSettings`, if you don't want to define an
+  // interpolation, evaluation or escaping regex, we need one that is
+  // guaranteed not to match.
+  var noMatch = /(.)^/;
+
+  // Certain characters need to be escaped so that they can be put into a
+  // string literal.
+  var escapes = {
+    "'":      "'",
+    '\\':     '\\',
+    '\r':     'r',
+    '\n':     'n',
+    '\t':     't',
+    '\u2028': 'u2028',
+    '\u2029': 'u2029'
+  };
+
+  var escaper = /\\|'|\r|\n|\t|\u2028|\u2029/g;
+
+  // JavaScript micro-templating, similar to John Resig's implementation.
+  // Underscore templating handles arbitrary delimiters, preserves whitespace,
+  // and correctly escapes quotes within interpolated code.
+  _.template = function(text, data, settings) {
+    var render;
+    settings = _.defaults({}, settings, _.templateSettings);
+
+    // Combine delimiters into one regular expression via alternation.
+    var matcher = new RegExp([
+      (settings.escape || noMatch).source,
+      (settings.interpolate || noMatch).source,
+      (settings.evaluate || noMatch).source
+    ].join('|') + '|$', 'g');
+
+    // Compile the template source, escaping string literals appropriately.
+    var index = 0;
+    var source = "__p+='";
+    text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
+      source += text.slice(index, offset)
+        .replace(escaper, function(match) { return '\\' + escapes[match]; });
+
+      if (escape) {
+        source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+      }
+      if (interpolate) {
+        source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
+      }
+      if (evaluate) {
+        source += "';\n" + evaluate + "\n__p+='";
+      }
+      index = offset + match.length;
+      return match;
+    });
+    source += "';\n";
+
+    // If a variable is not specified, place data values in local scope.
+    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+
+    source = "var __t,__p='',__j=Array.prototype.join," +
+      "print=function(){__p+=__j.call(arguments,'');};\n" +
+      source + "return __p;\n";
+
+    try {
+      render = new Function(settings.variable || 'obj', '_', source);
+    } catch (e) {
+      e.source = source;
+      throw e;
+    }
+
+    if (data) return render(data, _);
+    var template = function(data) {
+      return render.call(this, data, _);
+    };
+
+    // Provide the compiled function source as a convenience for precompilation.
+    template.source = 'function(' + (settings.variable || 'obj') + '){\n' + source + '}';
+
+    return template;
+  };
+
+  // Add a "chain" function, which will delegate to the wrapper.
+  _.chain = function(obj) {
+    return _(obj).chain();
+  };
+
+  // OOP
+  // ---------------
+  // If Underscore is called as a function, it returns a wrapped object that
+  // can be used OO-style. This wrapper holds altered versions of all the
+  // underscore functions. Wrapped objects may be chained.
+
+  // Helper function to continue chaining intermediate results.
+  var result = function(obj) {
+    return this._chain ? _(obj).chain() : obj;
+  };
+
+  // Add all of the Underscore functions to the wrapper object.
+  _.mixin(_);
+
+  // Add all mutator Array functions to the wrapper.
+  each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
+    var method = ArrayProto[name];
+    _.prototype[name] = function() {
+      var obj = this._wrapped;
+      method.apply(obj, arguments);
+      if ((name == 'shift' || name == 'splice') && obj.length === 0) delete obj[0];
+      return result.call(this, obj);
+    };
+  });
+
+  // Add all accessor Array functions to the wrapper.
+  each(['concat', 'join', 'slice'], function(name) {
+    var method = ArrayProto[name];
+    _.prototype[name] = function() {
+      return result.call(this, method.apply(this._wrapped, arguments));
+    };
+  });
+
+  _.extend(_.prototype, {
+
+    // Start chaining a wrapped Underscore object.
+    chain: function() {
+      this._chain = true;
+      return this;
+    },
+
+    // Extracts the result from a wrapped and chained object.
+    value: function() {
+      return this._wrapped;
+    }
+
+  });
+
+}).call(this);
+
+})()
+},{}],2:[function(require,module,exports){
+"use strict";
+
+var _ = require('underscore');
+var parser = new (require('xmlshim').DOMParser)();
+var serializer = new (require('xmlshim').XMLSerializer)();
+
+var helpers = require('./helpers');
+var types = require('./types');
+var find = helpers.find;
+
+var LOOKUP = {};
+var LOOKUP_EXT = {};
+var TOP_LEVEL_LOOKUP = {};
+
+
+function topLevel(JXT) {
+    var name = JXT.prototype._NS + '|' + JXT.prototype._EL;
+    LOOKUP[name] = JXT;
+    TOP_LEVEL_LOOKUP[name] = JXT;
+}
+
+function parse(JXT, str) {
+    var xml = parser.parseFromString(str, 'application/xml');
+    return new JXT({}, xml);
+}
+
+function toString(xml) {
+    return serializer.serializeToString(xml);
+}
+
+function toJSON(jxt) {
+    var prop;
+    var result = {};
+    var exclude = {
+        constructor: true,
+        _EL: true,
+        _NS: true,
+        _extensions: true,
+        _name: true,
+        parent: true,
+        prototype: true,
+        toJSON: true,
+        toString: true,
+        xml: true
+    };
+
+    for (prop in jxt._extensions) {
+        if (jxt._extensions[prop].toJSON && prop[0] !== '_') {
+            result[prop] = jxt._extensions[prop].toJSON();
+        }
+    }
+
+    for (prop in jxt) {
+        if (!exclude[prop] && !((LOOKUP_EXT[jxt._NS + '|' + jxt._EL] || {})[prop]) && !jxt._extensions[prop] && prop[0] !== '_') {
+            var val = jxt[prop];
+            if (typeof val == 'function') continue;
+            var type = Object.prototype.toString.call(val);
+            if (type.indexOf('Object') >= 0) {
+                if (Object.keys(val).length > 0) {
+                    result[prop] = val;
+                }
+            } else if (type.indexOf('Array') >= 0) {
+                if (val.length > 0) {
+                    result[prop] = val;
+                }
+            } else if (!!val) {
+                result[prop] = val;
+            }
+        }
+    }
+
+    return result;
+}
+
+
+exports.build = function (xml) {
+    var JXT = TOP_LEVEL_LOOKUP[xml.namespaceURI + '|' + xml.localName];
+    if (JXT) {
+        return new JXT(null, xml);
+    }
+};
+
+exports.extend = function (ParentJXT, ChildJXT, multiName) {
+    var parentName = ParentJXT.prototype._NS + '|' + ParentJXT.prototype._EL;
+    var name = ChildJXT.prototype._name;
+    var qName = ChildJXT.prototype._NS + '|' + ChildJXT.prototype._EL;
+
+    LOOKUP[qName] = ChildJXT;
+    if (!LOOKUP_EXT[qName]) {
+        LOOKUP_EXT[qName] = {};
+    }
+    if (!LOOKUP_EXT[parentName]) {
+        LOOKUP_EXT[parentName] = {};
+    }
+    LOOKUP_EXT[parentName][name] = ChildJXT;
+
+    exports.add(ParentJXT, name, types.extension(ChildJXT));
+    if (multiName) {
+        exports.add(ParentJXT, multiName, types.multiExtension(ChildJXT));
+    }
+};
+
+exports.add = function (ParentJXT, fieldName, field) {
+    field.enumerable = true;
+    Object.defineProperty(ParentJXT.prototype, fieldName, field);
+};
+
+exports.define = function (opts) {
+    var StanzaConstructor = function (data, xml, parent) {
+        var self = this;
+
+        var parentNode = (xml || {}).parentNode || (parent || {}).xml;
+        var parentNS = (parentNode || {}).namespaceURI;
+
+        self.xml = xml || helpers.createElement(self._NS, self._EL, parentNS);
+
+        self._extensions = {};
+
+        _.each(self.xml.childNodes, function (child) {
+            var childName = child.namespaceURI + '|' + child.localName;
+            var ChildJXT = LOOKUP[childName];
+            if (ChildJXT !== undefined) {
+                var name = ChildJXT.prototype._name;
+                self._extensions[name] = new ChildJXT(null, child);
+                self._extensions[name].parent = self;
+            }
+        });
+
+        _.extend(self, data);
+
+        if (opts.init) {
+            opts.init(data);
+        }
+
+        return self;
+    };
+
+    StanzaConstructor.prototype = {
+        constructor: {
+            value: StanzaConstructor
+        },
+        _name: opts.name,
+        _eventname: opts.eventName,
+        _NS: opts.namespace,
+        _EL: opts.element,
+        toString: function () { return toString(this.xml); },
+        toJSON: function () { return toJSON(this); }
+    };
+
+    var fieldNames = Object.keys(opts.fields || {});
+    fieldNames.forEach(function (fieldName) {
+        exports.add(StanzaConstructor, fieldName, opts.fields[fieldName]);
+    });
+
+    if (opts.topLevel) {
+        topLevel(StanzaConstructor);
+    }
+
+    return StanzaConstructor;
+};
+
+},{"./helpers":3,"./types":4,"underscore":5,"xmlshim":6}],3:[function(require,module,exports){
+"use strict";
+
+var _ = require('underscore');
+var XML_NS = 'http://www.w3.org/XML/1998/namespace';
+
+
+exports.getParser = function () {
+    return new DOMParser();
+};
+
+exports.createElement = function (NS, name, parentNS) {
+    var el = document.createElementNS(NS, name);
+    if (!parentNS || parentNS !== NS) {
+        exports.setAttribute(el, 'xmlns', NS);
+    }
+    return el;
+};
+
+var find = exports.find = function (xml, NS, selector) {
+    var children = xml.querySelectorAll(selector);
+    return _.filter(children, function (child) {
+        return child.namespaceURI === NS && child.parentNode == xml;
+    });
+};
+
+exports.findOrCreate = function (xml, NS, selector) {
+    var existing = exports.find(xml, NS, selector);
+    if (existing.length) {
+        return existing[0];
+    } else {
+        var created = exports.createElement(NS, selector, xml.namespaceURI);
+        xml.appendChild(created);
+        return created;
+    }
+};
+
+exports.getAttribute = function (xml, attr, defaultVal) {
+    return xml.getAttribute(attr) || defaultVal || '';
+};
+
+exports.setAttribute = function (xml, attr, value, force) {
+    if (value || force) {
+        xml.setAttribute(attr, value);
+    } else {
+        xml.removeAttribute(attr);
+    }
+};
+
+exports.getBoolAttribute = function (xml, attr, defaultVal) {
+    var val = xml.getAttribute(attr) || defaultVal || '';
+    return val === 'true' || val === '1';
+};
+
+exports.setBoolAttribute = function (xml, attr, value) {
+    if (value) {
+        xml.setAttribute(attr, '1');
+    } else {
+        xml.removeAttribute(attr);
+    }
+};
+
+exports.getSubAttribute = function (xml, NS, sub, attr, defaultVal) {
+    var subs = find(xml, NS, sub);
+    if (!subs) {
+        return '';
+    }
+
+    for (var i = 0; i < subs.length; i++) {
+        return subs[i].getAttribute(attr) || defaultVal || '';
+    }
+
+    return '';
+};
+
+exports.setSubAttribute = function (xml, NS, sub, attr, value) {
+    var subs = find(xml, NS, sub);
+    if (!subs.length) {
+        if (value) {
+            sub = exports.createElement(NS, sub, xml.namespaceURI);
+            sub.setAttribute(attr, value);
+            xml.appendChild(sub);
+        }
+    } else {
+        for (var i = 0; i < subs.length; i++) {
+            if (value) {
+                subs[i].setAttribute(attr, value);
+                return;
+            } else {
+                subs[i].removeAttribute(attr);
+            }
+        }
+    }
+};
+
+exports.getBoolSubAttribute = function (xml, NS, sub, attr, defaultVal) {
+    var val = xml.getSubAttribute(NS, sub, attr) || defaultVal || '';
+    return val === 'true' || val === '1';
+};
+
+exports.setBoolSubAttribute = function (xml, NS, sub, attr, value) {
+    value = value ? '1' : '';
+    exports.setSubAttribute(xml, NS, sub, attr, value);
+};
+
+exports.getText = function (xml) {
+    return xml.textContent;
+};
+
+exports.setText = function (xml, value) {
+    xml.textContent = value;
+};
+
+exports.getSubText = function (xml, NS, element, defaultVal) {
+    var subs = find(xml, NS, element);
+
+    defaultVal = defaultVal || '';
+
+    if (!subs.length) {
+        return defaultVal;
+    }
+
+    return subs[0].textContent || defaultVal;
+};
+
+exports.setSubText = function (xml, NS, element, value) {
+    var subs = find(xml, NS, element);
+    if (!subs.length) {
+        if (value) {
+            var sub = exports.createElement(NS, element, xml.namespaceURI);
+            sub.textContent = value;
+            xml.appendChild(sub);
+        }
+    } else {
+        for (var i = 0; i < subs.length; i++) {
+            if (value) {
+                subs[i].textContent = value;
+                return;
+            } else {
+                xml.removeChild(subs[i]);
+            }
+        }
+    }
+};
+
+exports.getMultiSubText = function (xml, NS, element, extractor) {
+    var subs = find(xml, NS, element);
+    var results = [];
+
+    extractor = extractor || function (sub) {
+        return sub.textContent || '';
+    };
+
+    for (var i = 0; i < subs.length; i++) {
+        results.push(extractor(subs[i]));
+    }
+
+    return results;
+};
+
+exports.setMultiSubText = function (xml, NS, element, value, builder) {
+    var subs = find(xml, NS, element);
+    var values = [];
+    builder = builder || function (value) {
+        var sub = exports.createElement(NS, element, xml.namespaceURI);
+        sub.textContent = value;
+        xml.appendChild(sub);
+    };
+    if (typeof value === 'string') {
+        values = (value || '').split('\n');
+    } else {
+        values = value;
+    }
+    _.forEach(subs, function (sub) {
+        xml.removeChild(sub);
+    });
+    _.forEach(values, function (val) {
+        if (val) {
+            builder(val);
+        }
+    });
+};
+
+exports.getSubLangText = function (xml, NS, element, defaultLang) {
+    var subs = find(xml, NS, element);
+    if (!subs.length) {
+        return {};
+    }
+
+    var lang, sub;
+    var results = {};
+    var langs = [];
+
+    for (var i = 0; i < subs.length; i++) {
+        sub = subs[i];
+        lang = sub.getAttributeNS(XML_NS, 'lang') || defaultLang;
+        langs.push(lang);
+        results[lang] = sub.textContent || '';
+    }
+
+    return results;
+};
+
+exports.setSubLangText = function (xml, NS, element, value, defaultLang) {
+    var sub, lang;
+    var subs = find(xml, NS, element);
+    if (subs.length) {
+        for (var i = 0; i < subs.length; i++) {
+            xml.removeChild(subs[i]);
+        }
+    }
+
+    if (typeof value === 'string') {
+        sub = exports.createElement(NS, element, xml.namespaceURI);
+        sub.textContent = value;
+        xml.appendChild(sub);
+    } else if (typeof value === 'object') {
+        for (lang in value) {
+            if (value.hasOwnProperty(lang)) {
+                sub = exports.createElement(NS, element, xml.namespaceURI);
+                if (lang !== defaultLang) {
+                    sub.setAttributeNS(XML_NS, 'lang', lang);
+                }
+                sub.textContent = value[lang];
+                xml.appendChild(sub);
+            }
+        }
+    }
+};
+
+exports.getBoolSub = function (xml, NS, element) {
+    var subs = find(xml, NS, element);
+    return !!subs.length;
+};
+
+exports.setBoolSub = function (xml, NS, element, value) {
+    var subs = find(xml, NS, element);
+    if (!subs.length) {
+        if (value) {
+            var sub = exports.createElement(NS, element, xml.namespaceURI);
+            xml.appendChild(sub);
+        }
+    } else {
+        for (var i = 0; i < subs.length; i++) {
+            if (value) {
+                return;
+            } else {
+                xml.removeChild(subs[i]);
+            }
+        }
+    }
+};
+
+},{"underscore":5}],4:[function(require,module,exports){
+"use strict";
+
+var _ = require('underscore');
+var helpers = require('./helpers');
+var find = helpers.find;
+
+
+var field = exports.field = function (getter, setter) {
+    return function () {
+        var args = _.toArray(arguments);
+        return {
+            get: function () {
+                return getter.apply(null, [this.xml].concat(args));
+            },
+            set: function (value) {
+                setter.apply(null, ([this.xml].concat(args)).concat([value]));
+            }
+        };
+    };
+};
+
+exports.field = field;
+exports.boolAttribute = field(helpers.getBoolAttribute,
+                              helpers.setBoolAttribute);
+exports.subAttribute = field(helpers.getSubAttribute,
+                             helpers.setSubAttribute);
+exports.boolSubAttribute = field(helpers.getSubBoolAttribute,
+                                 helpers.setSubBoolAttribute);
+exports.text = field(helpers.getText,
+                     helpers.setText);
+exports.subText = field(helpers.getSubText,
+                        helpers.setSubText);
+exports.multiSubText = field(helpers.getMultiSubText,
+                             helpers.setMultiSubText);
+exports.subLangText = field(helpers.getSubLangText,
+                            helpers.setSubLangText);
+exports.boolSub = field(helpers.getBoolSub,
+                        helpers.setBoolSub);
+
+exports.attribute = function (name, defaultVal) {
+    return {
+        get: function () {
+            return helpers.getAttribute(this.xml, name, defaultVal);
+        },
+        set: function (value) {
+            helpers.setAttribute(this.xml, name, value);
+        }
+    };
+};
+
+exports.extension = function (ChildJXT) {
+    return {
+        get: function () {
+            var self = this;
+            var name = ChildJXT.prototype._name;
+            if (!this._extensions[name]) {
+                var existing = find(this.xml, ChildJXT.prototype._NS, ChildJXT.prototype._EL);
+                if (!existing.length) {
+                    this._extensions[name] = new ChildJXT({}, null, self);
+                    this.xml.appendChild(this._extensions[name].xml);
+                } else {
+                    this._extensions[name] = new ChildJXT(null, existing[0], self);
+                }
+                this._extensions[name].parent = this;
+            }
+            return this._extensions[name];
+        },
+        set: function (value) {
+            var child = this[ChildJXT.prototype._name];
+            _.extend(child, value);
+        }
+    };
+};
+
+exports.multiExtension = function (ChildJXT) {
+    return {
+        get: function () {
+            var self = this;
+            var data = find(this.xml, ChildJXT.prototype._NS, ChildJXT.prototype._EL);
+            var results = [];
+
+            _.forEach(data, function (xml) {
+                results.push(new ChildJXT({}, xml, self).toJSON());
+            });
+            return results;
+        },
+        set: function (value) {
+            var self = this;
+            var existing = find(this.xml, ChildJXT.prototype._NS, ChildJXT.prototype._EL);
+
+            _.forEach(existing, function (item) {
+                self.xml.removeChild(item);
+            });
+
+            _.forEach(value, function (data) {
+                var content = new ChildJXT(data, null, self);
+                self.xml.appendChild(content.xml);
+            });
+        }
+    };
+};
+
+},{"./helpers":3,"underscore":5}],6:[function(require,module,exports){
+exports.XMLSerializer = XMLSerializer;
+exports.DOMParser = DOMParser;
+exports.implementation = document.implementation;
+
+},{}]},{},[1])(1)
+});
+;

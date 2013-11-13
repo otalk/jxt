@@ -18,7 +18,13 @@ var JXT = core.define({
         subAttribute: types.subAttribute('test', 'subattr', 'attr'),
         subText: types.subText('test', 'sub'),
         multiSubText: types.multiSubText('test', 'sub'),
-        subLangText: types.subLangText('test', 'sublang')
+        subLangText: types.subLangText('test', 'sublang'),
+        lang: types.langAttribute(),
+        numberAttribute: types.numberAttribute('numattr'),
+        numberSub: types.numberSub('test', 'numsub'),
+        dateAttribute: types.dateAttribute('dateattr'),
+        dateSub: types.dateSub('test', 'datesub'),
+        dateSubAttribute: types.dateSubAttribute('test', 'datesub', 'dateattr')
     }
 });
 
@@ -29,6 +35,16 @@ var SubJXT = core.define({
     element: 'subjxt',
     fields: {
         text: types.text()
+    }
+});
+
+var B64JXT = core.define({
+    name: 'b64JXT',
+    namespace: 'test',
+    element: 'b64',
+    fields: {
+        text: types.text(),
+        b64Text: types.b64Text()
     }
 });
 
@@ -195,6 +211,84 @@ test('field subLangText', function (t) {
     t.deepEqual(res, {'en': 'foo', 'sv': 'bar'});
     t.end();
 });
+
+test('field langAttribute', function (t) {
+    var xml = new JXT();
+
+    xml.langAttribute  = 'en';
+    var res = xml.langAttribute;
+
+    t.equal(res, 'en');
+    t.end();
+});
+
+test('field numberAttribute', function (t) {
+    var xml = new JXT();
+
+    xml.numberAttribute  = 42;
+    var res = xml.numberAttribute;
+
+    t.equal(res, 42);
+    t.end();
+});
+
+test('field numberSub', function (t) {
+    var xml = new JXT();
+
+    xml.numberSub = 42;
+    var res = xml.numberSub;
+
+    t.equal(res, 42);
+    t.end();
+});
+
+test('field dateAttribute', function (t) {
+    var xml = new JXT();
+    var dt = new Date(2015, 10, 21, 7, 28);
+
+    xml.dateAttribute = dt;
+    var res = xml.dateAttribute;
+
+    t.deepEqual(res, dt);
+    t.end();
+});
+
+test('field dateSub', function (t) {
+    var xml = new JXT();
+    var dt = new Date(2015, 10, 21, 7, 28);
+
+    xml.dateSub = dt;
+    var res = xml.dateSub;
+
+    t.deepEqual(res, dt);
+    t.end();
+});
+
+test('field dateSubAttribute', function (t) {
+    var xml = new JXT();
+    var dt = new Date(2015, 10, 21, 7, 28);
+
+    xml.dateSubAttribute = dt;
+    var res = xml.dateSubAttribute;
+
+    t.deepEqual(res, dt);
+    t.end();
+});
+
+
+
+test('field b64Text', function (t) {
+    var xml = new B64JXT();
+
+    xml.b64Text = 'b64d text';
+    var resPlain = xml.b64Text;
+    var res64 = xml.text;
+
+    t.equal(resPlain, 'b64d text');
+    t.equal(res64, 'YjY0ZCB0ZXh0');
+    t.end();
+});
+
 
 test('extending', function (t) {
     var xml = new JXT();
