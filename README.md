@@ -9,14 +9,8 @@
 
 ## What is this?
 
-A basic framework for translating XML to JSON and back again, and can be used
+A basic framework for translating XML to dev-friendly JSON and back again, and can be used
 both in the browser and in node.
-
-Suitable for use with browserify/CommonJS on the client.
-
-If you're not using browserify or you want AMD support, run `grunt` to generate a
-bundled, standalone version.
-
 
 ## Installing
 
@@ -24,7 +18,7 @@ bundled, standalone version.
 $ npm install jxt
 ```
 
-## Building (if using AMD, etc)
+## Building bundled/minified version (if using AMD, etc)
 
 ```sh
 $ grunt
@@ -37,6 +31,8 @@ The bundled and minified files will be in the generated `build` directory.
 First, we define the mapping between our XML and desired JSON:
 
 ```js
+var jxt = require('jxt');
+
 var Message = jxt.define({
     name: 'message',
     namespace: 'jabber:client',
