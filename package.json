@@ -7,8 +7,8 @@
     "dependencies": {
         "underscore": "1.5.2",
         "xmlshim": "0.0.9",
-        "atob": "",
-        "btoa": ""
+        "atob": "1.1.0",
+        "btoa": "1.1.1"
     },
     "devDependencies": {
         "browserify": "2.35.1",
