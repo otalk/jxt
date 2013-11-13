@@ -6,17 +6,17 @@ module.exports = function (grunt) {
         browserify: {
             dist: {
                 files: {
-                    'build/stanzaio.bundle.js': ['<%= pkg.main %>']
+                    'build/<%= pkg.name %>.bundle.js': ['<%= pkg.main %>']
                 }
             }
         },
         uglify: {
             options: {
-                banner: '/*! stanzaio <%= grunt.template.today("yyyy-mm-dd") %>'
+                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %>'
             },
             dist: {
                 files: {
-                    'build/stanzaio.bundle.min.js': ['build/stanzaio.bundle.js']
+                    'build/<%= pkg.name %>.bundle.min.js': ['build/<%= pkg.name %>.bundle.js']
                 }
             }
         },
