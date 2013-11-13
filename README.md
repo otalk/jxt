@@ -1,5 +1,8 @@
 # jxt: JSON/XML Translation for the Browser
 
+[![Build Status](https://travis-ci.org/legastero/jxt.png)](https://travis-ci.org/legastero/jxt)
+[![Browser Support](https://ci.testling.com/legastero/jxt.png)](https://ci.testling.com/legastero/jxt)
+
 ## What is this?
 
 A basic framework for translating XML to JSON and back again, and can be used
