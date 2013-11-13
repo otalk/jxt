@@ -1,6 +1,5 @@
-# jxt: JSON/XML Translation for the Browser
-
-## Project Status
+# jxt
+**JSON/XML Translation for the Browser**
 
 [![Build Status](https://travis-ci.org/legastero/jxt.png)](https://travis-ci.org/legastero/jxt)
 [![Dependency Status](https://david-dm.org/legastero/jxt.png)](https://david-dm.org/legastero/jxt)
@@ -21,9 +20,17 @@ bundled, standalone version.
 
 ## Installing
 
+```sh
+$ npm install jxt
 ```
-npm install jxt
+
+## Building (if using AMD, etc)
+
+```sh
+$ grunt
 ```
+
+The bundled and minified files will be in the generated `build` directory.
 
 ## How to use it
 
