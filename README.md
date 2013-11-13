@@ -1,7 +1,13 @@
 # jxt: JSON/XML Translation for the Browser
 
+## Project Status
+
+[![Dependency Status](https://david-dm.org/legastero/jxt.png)](https://david-dm.org/legastero/jxt)
+
 [![Build Status](https://travis-ci.org/legastero/jxt.png)](https://travis-ci.org/legastero/jxt)
+
 [![Browser Support](https://ci.testling.com/legastero/jxt.png)](https://ci.testling.com/legastero/jxt)
+
 
 ## What is this?
 
