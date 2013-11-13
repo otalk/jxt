@@ -4,6 +4,9 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         browserify: {
+            options: {
+                standalone: 'JXT'
+            },
             dist: {
                 files: {
                     'build/<%= pkg.name %>.bundle.js': ['<%= pkg.main %>']

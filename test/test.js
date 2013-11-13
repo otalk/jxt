@@ -329,3 +329,15 @@ test('json', function (t) {
 
     t.end();
 });
+
+test('parse', function (t) {
+    t.plan(1);
+
+    var str = "<jxt xmlns='test' attr='passed' />";
+    var xml = helpers.parse(JXT, str);
+
+    console.log(xml);
+
+    t.equal(xml.attribute, 'passed');
+    t.end();
+});
