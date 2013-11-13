@@ -2,13 +2,11 @@
 
 ## Project Status
 
+[![Build Status](https://travis-ci.org/legastero/jxt.png)](https://travis-ci.org/legastero/jxt)
 [![Dependency Status](https://david-dm.org/legastero/jxt.png)](https://david-dm.org/legastero/jxt)
 [![devDependency Status](https://david-dm.org/legastero/jxt/dev-status.png)](https://david-dm.org/legastero/jxt#info=devDependencies)
 
-[![Build Status](https://travis-ci.org/legastero/jxt.png)](https://travis-ci.org/legastero/jxt)
-
 [![Browser Support](https://ci.testling.com/legastero/jxt.png)](https://ci.testling.com/legastero/jxt)
-
 
 ## What is this?
 
@@ -105,3 +103,7 @@ console.log(msg.toString());
 ## License
 
 MIT
+
+## Created By
+
+If you like this, follow [@lancestout](http://twitter.com/lancestout) on twitter.
