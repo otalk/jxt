@@ -18,7 +18,7 @@ both in the browser and in node.
 $ npm install jxt
 ```
 
-## Building bundled/minified version (if using AMD, etc)
+## Building bundled/minified version (for AMD, etc)
 
 ```sh
 $ grunt
