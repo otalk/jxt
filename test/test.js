@@ -253,9 +253,22 @@ test('field dateAttribute', function (t) {
     t.end();
 });
 
+test('field dateAttribute string', function (t) {
+    var xml = new JXT();
+    var dt = new Date(Date.UTC(2015, 9, 21, 7, 28));
+
+    xml.dateAttribute = '2015-10-21T07:28:00Z';
+    var res = xml.dateAttribute;
+    console.log(res.toISOString());
+    console.log(dt.toISOString());
+
+    t.deepEqual(res, dt);
+    t.end();
+});
+
 test('field dateSub', function (t) {
     var xml = new JXT();
-    var dt = new Date(2015, 10, 21, 7, 28);
+    var dt = new Date(2015, 9, 21, 7, 28);
 
     xml.dateSub = dt;
     var res = xml.dateSub;
@@ -266,7 +279,7 @@ test('field dateSub', function (t) {
 
 test('field dateSubAttribute', function (t) {
     var xml = new JXT();
-    var dt = new Date(2015, 10, 21, 7, 28);
+    var dt = new Date(2015, 9, 21, 7, 28);
 
     xml.dateSubAttribute = dt;
     var res = xml.dateSubAttribute;
@@ -335,8 +348,6 @@ test('parse', function (t) {
 
     var str = "<jxt xmlns='test' attr='passed' />";
     var xml = helpers.parse(JXT, str);
-
-    console.log(xml);
 
     t.equal(xml.attribute, 'passed');
     t.end();
