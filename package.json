@@ -30,10 +30,14 @@
         "browsers": [
             "ie/10..latest",
             "chrome/20..latest",
+            "chrome/canary",
             "firefox/10..latest",
+            "firefox/nightly",
+            "opera/next",
             "safari/6..latest",
             "iphone/6..latest",
-            "ipad/6..latest"
+            "ipad/6..latest",
+            "android-browser/4.2..latest"
         ]
     },
     "bugs": "https://github.com/legastero/jxt/issues",
