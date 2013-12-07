@@ -1,9 +1,8 @@
 {
     "name": "jxt",
-    "version": "0.3.3",
+    "version": "0.4.0",
     "description": "JSON/XML Translator. Set/retrieve data from XML just like working with a dictionary.",
     "main": "index.js",
-    "browserify": "index.js",
     "dependencies": {
         "underscore": "1.5.2",
         "xmlshim": "0.0.9",
@@ -11,13 +10,13 @@
         "btoa": "1.1.1"
     },
     "devDependencies": {
-        "browserify": "2.35.1",
-        "grunt": "0.4.1",
+        "browserify": "2.36.1",
+        "grunt": "0.4.2",
         "grunt-browserify": "1.2.11",
-        "grunt-contrib-jshint": "0.7.1",
+        "grunt-contrib-jshint": "0.7.2",
         "grunt-contrib-uglify": "0.2.7",
         "precommit-hook": "0.3.8",
-        "tape": "2.1.0"
+        "tape": "2.3.0"
     },
     "repository": {
         "type": "git",

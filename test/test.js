@@ -22,6 +22,8 @@ var JXT = core.define({
         lang: types.langAttribute(),
         numberAttribute: types.numberAttribute('numattr'),
         numberSub: types.numberSub('test', 'numsub'),
+        floatAttribute: types.numberAttribute('floatattr', true),
+        floatSub: types.numberSub('test', 'floatsub', true),
         dateAttribute: types.dateAttribute('dateattr'),
         dateSub: types.dateSub('test', 'datesub'),
         dateSubAttribute: types.dateSubAttribute('test', 'datesub', 'dateattr')
@@ -223,22 +225,32 @@ test('field langAttribute', function (t) {
 });
 
 test('field numberAttribute', function (t) {
+    t.plan(2);
     var xml = new JXT();
 
     xml.numberAttribute  = 42;
     var res = xml.numberAttribute;
 
+    xml.floatAttribute = 42.2;
+    var res2 = xml.floatAttribute;
+
     t.equal(res, 42);
+    t.equal(res2, 42.2);
     t.end();
 });
 
 test('field numberSub', function (t) {
+    t.plan(2);
     var xml = new JXT();
 
     xml.numberSub = 42;
     var res = xml.numberSub;
 
+    xml.floatSub = 42.2;
+    var res2 = xml.floatSub;
+
     t.equal(res, 42);
+    t.equal(res2, 42.2);
     t.end();
 });
 
