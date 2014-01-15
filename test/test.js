@@ -271,8 +271,6 @@ test('field dateAttribute string', function (t) {
 
     xml.dateAttribute = '2015-10-21T07:28:00Z';
     var res = xml.dateAttribute;
-    console.log(res.toISOString());
-    console.log(dt.toISOString());
 
     t.deepEqual(res, dt);
     t.end();
