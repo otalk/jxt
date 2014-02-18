@@ -50,6 +50,19 @@ var B64JXT = core.define({
     }
 });
 
+var InitJXT = core.define({
+    name: 'initJXT',
+    namespace: 'test',
+    element: 'init',
+    init: function () {
+        this.result = this.test;
+    },
+    fields: {
+        test: types.attribute('test'),
+        result: types.attribute('result')
+    }
+});
+
 
 core.extend(JXT, SubJXT, 'multiSubs');
 
@@ -360,5 +373,15 @@ test('parse', function (t) {
     var xml = helpers.parse(JXT, str);
 
     t.equal(xml.attribute, 'passed');
+    t.end();
+});
+
+test('init', function (t) {
+    t.plan(1);
+
+    var str = "<init xmlns='test' test='passed' />";
+    var xml = helpers.parse(InitJXT, str);
+
+    t.equal(xml.result, 'passed');
     t.end();
 });
