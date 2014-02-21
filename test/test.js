@@ -370,7 +370,7 @@ test('parse', function (t) {
     t.plan(1);
 
     var str = "<jxt xmlns='test' attr='passed' />";
-    var xml = helpers.parse(JXT, str);
+    var xml = core.parse(str, JXT);
 
     t.equal(xml.attribute, 'passed');
     t.end();
@@ -380,7 +380,7 @@ test('init', function (t) {
     t.plan(1);
 
     var str = "<init xmlns='test' test='passed' />";
-    var xml = helpers.parse(InitJXT, str);
+    var xml = core.parse(str, InitJXT);
 
     t.equal(xml.result, 'passed');
     t.end();
