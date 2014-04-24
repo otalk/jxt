@@ -4,7 +4,7 @@
   "description": "JSON/XML Translator. Set/retrieve data from XML just like working with a dictionary.",
   "main": "index.js",
   "dependencies": {
-    "underscore": "1.5.2",
+    "underscore": "^1.6.0",
     "ltx-dom-shim": "0.0.2",
     "atob": "1.1.0",
     "btoa": "1.1.1"
