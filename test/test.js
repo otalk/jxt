@@ -356,13 +356,28 @@ test('json', function (t) {
 
     var res = xml.toJSON();
 
-    t.deepEqual(res, {attribute: 'foo', subJXT: {text: 'bar'}, multiSubs: [{text: 'bar'}]});
+    t.deepEqual(res, {
+        "subJXT": {"text": "bar"},
+        "attribute": "foo",
+        "numberAttribute": 0,
+        "numberSub": 0,
+        "floatAttribute": 0,
+        "floatSub": 0,
+        "multiSubs": [{"text": "bar"}]
+    });
 
     var xml2 = new JXT(res);
     var res2 = xml2.toJSON();
 
-    t.deepEqual(res2, {attribute: 'foo', subJXT: {text: 'bar'}, multiSubs: [{text: 'bar'}]});
-
+    t.deepEqual(res2, {
+        "subJXT": {"text": "bar"},
+        "attribute": "foo",
+        "numberAttribute": 0,
+        "numberSub": 0,
+        "floatAttribute": 0,
+        "floatSub": 0,
+        "multiSubs": [{"text": "bar"}]
+    });
     t.end();
 });
 
