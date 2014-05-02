@@ -1,6 +1,6 @@
 {
   "name": "jxt",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JSON/XML Translator. Set/retrieve data from XML just like working with a dictionary.",
   "main": "index.js",
   "dependencies": {
