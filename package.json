@@ -11,12 +11,15 @@
   },
   "devDependencies": {
     "browserify": "2.36.1",
-    "grunt": "0.4.2",
-    "grunt-browserify": "1.2.11",
-    "grunt-contrib-jshint": "0.7.2",
-    "grunt-contrib-uglify": "0.2.7",
-    "precommit-hook": "0.3.8",
-    "tape": "2.3.0"
+    "grunt": "0.4.x",
+    "grunt-browserify": "2.x",
+    "grunt-contrib-jshint": "0.10.x",
+    "grunt-contrib-uglify": "0.4.x",
+    "grunt-nsp-package": "0.0.x",
+    "grunt-tape": "0.0.x",
+    "precommit-hook": "^1.0.0",
+    "tape": "2.x",
+    "uglify-js": "2.x"
   },
   "repository": {
     "type": "git",

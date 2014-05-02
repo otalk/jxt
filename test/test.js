@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var test = require('tape');
 var core = require('../lib/core');
@@ -357,26 +357,26 @@ test('json', function (t) {
     var res = xml.toJSON();
 
     t.deepEqual(res, {
-        "subJXT": {"text": "bar"},
-        "attribute": "foo",
-        "numberAttribute": 0,
-        "numberSub": 0,
-        "floatAttribute": 0,
-        "floatSub": 0,
-        "multiSubs": [{"text": "bar"}]
+        'subJXT': {'text': 'bar'},
+        'attribute': 'foo',
+        'numberAttribute': 0,
+        'numberSub': 0,
+        'floatAttribute': 0,
+        'floatSub': 0,
+        'multiSubs': [{'text': 'bar'}]
     });
 
     var xml2 = new JXT(res);
     var res2 = xml2.toJSON();
 
     t.deepEqual(res2, {
-        "subJXT": {"text": "bar"},
-        "attribute": "foo",
-        "numberAttribute": 0,
-        "numberSub": 0,
-        "floatAttribute": 0,
-        "floatSub": 0,
-        "multiSubs": [{"text": "bar"}]
+        'subJXT': {'text': 'bar'},
+        'attribute': 'foo',
+        'numberAttribute': 0,
+        'numberSub': 0,
+        'floatAttribute': 0,
+        'floatSub': 0,
+        'multiSubs': [{'text': 'bar'}]
     });
     t.end();
 });
@@ -384,7 +384,7 @@ test('json', function (t) {
 test('parse', function (t) {
     t.plan(1);
 
-    var str = "<jxt xmlns='test' attr='passed' />";
+    var str = '<jxt xmlns="test" attr="passed" />';
     var xml = core.parse(str, JXT);
 
     t.equal(xml.attribute, 'passed');
@@ -394,7 +394,7 @@ test('parse', function (t) {
 test('init', function (t) {
     t.plan(1);
 
-    var str = "<init xmlns='test' test='passed' />";
+    var str = '<init xmlns="test" test="passed" />';
     var xml = core.parse(str, InitJXT);
 
     t.equal(xml.result, 'passed');

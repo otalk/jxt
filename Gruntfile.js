@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 module.exports = function (grunt) {
     grunt.initConfig({
@@ -26,12 +26,20 @@ module.exports = function (grunt) {
         jshint: {
             files: ['Gruntfile.js', 'index.js', 'lib/**.js', 'test/**.js'],
             options: grunt.file.readJSON('.jshintrc')
+        },
+        tape: {
+            options: {
+                pretty: true
+            },
+            files: ['test/test.js']
         }
+ 
     });
 
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-tape');
 
-    grunt.registerTask('default', ['jshint', 'browserify', 'uglify']);
+    grunt.registerTask('default', ['jshint', 'browserify', 'uglify', 'tape']);
 };
