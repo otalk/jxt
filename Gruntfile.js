@@ -5,7 +5,9 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         browserify: {
             options: {
-                standalone: 'JXT'
+                bundleOptions: {
+                    standalone: 'JXT'
+                }
             },
             dist: {
                 files: {
