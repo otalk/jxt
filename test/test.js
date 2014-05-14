@@ -18,6 +18,7 @@ var JXT = core.define({
         subAttribute: types.subAttribute('test', 'subattr', 'attr'),
         subText: types.subText('test', 'sub'),
         multiSubText: types.multiSubText('test', 'sub'),
+        multiSubAttribute: types.multiSubAttribute('test', 'subattr', 'id'),
         subLangText: types.subLangText('test', 'sublang'),
         lang: types.langAttribute(),
         numberAttribute: types.numberAttribute('numattr'),
@@ -137,6 +138,16 @@ test('basic multiSubText', function (t) {
     t.end();
 });
 
+test('basic multiSubAttributes', function (t) {
+    var xml = helpers.createElement('test', 'test');
+
+    helpers.setMultiSubAttribute(xml, 'test', 'subattr', 'id', ['foo', 'bar']);
+    var res = helpers.getMultiSubAttribute(xml, 'test', 'subattr', 'id');
+
+    t.deepEqual(res, ['foo', 'bar']);
+    t.end();
+});
+
 test('basic subLangText', function (t) {
     var xml = helpers.createElement('test', 'test');
 
@@ -212,6 +223,16 @@ test('field multiSubText', function (t) {
 
     xml.multiSubText = ['foo', 'bar'];
     var res = xml.multiSubText;
+
+    t.deepEqual(res, ['foo', 'bar']);
+    t.end();
+});
+
+test('field multiSubAttribute', function (t) {
+    var xml = new JXT();
+
+    xml.multiSubAttribute = ['foo', 'bar'];
+    var res = xml.multiSubAttribute;
 
     t.deepEqual(res, ['foo', 'bar']);
     t.end();
