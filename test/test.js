@@ -21,7 +21,7 @@ var JXT = core.define({
         subLangText: types.subLangText('test', 'sublang'),
         lang: types.langAttribute(),
         numberAttribute: types.numberAttribute('numattr'),
-        numberSub: types.numberSub('test', 'numsub'),
+        numberSub: types.numberSub('test', 'numsub', false, 42),
         floatAttribute: types.numberAttribute('floatattr', true),
         floatSub: types.numberSub('test', 'floatsub', true),
         dateAttribute: types.dateAttribute('dateattr'),
@@ -359,10 +359,7 @@ test('json', function (t) {
     t.deepEqual(res, {
         'subJXT': {'text': 'bar'},
         'attribute': 'foo',
-        'numberAttribute': 0,
-        'numberSub': 0,
-        'floatAttribute': 0,
-        'floatSub': 0,
+        'numberSub': 42,
         'multiSubs': [{'text': 'bar'}]
     });
 
@@ -372,10 +369,7 @@ test('json', function (t) {
     t.deepEqual(res2, {
         'subJXT': {'text': 'bar'},
         'attribute': 'foo',
-        'numberAttribute': 0,
-        'numberSub': 0,
-        'floatAttribute': 0,
-        'floatSub': 0,
+        'numberSub': 42,
         'multiSubs': [{'text': 'bar'}]
     });
     t.end();
