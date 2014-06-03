@@ -55,6 +55,6 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "node test/test.js"
+    "test": "grunt tape"
   }
 }

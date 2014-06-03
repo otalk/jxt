@@ -33,7 +33,7 @@ module.exports = function (grunt) {
             options: {
                 pretty: true
             },
-            files: ['test/test.js']
+            files: ['test/test.js', 'test/scoping.js']
         }
  
     });
