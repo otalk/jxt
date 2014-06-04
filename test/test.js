@@ -363,7 +363,7 @@ test('multiExtending', function (t) {
     xml.multiSubs = [{text: 'one'}, {text: 'two'}];
     var res = xml.toJSON();
 
-    t.deepEqual(res, { multiSubs: [ { text: 'one' }, { text: 'two' } ] });
+    t.deepEqual(res, { multiSubs: [ { text: 'one' }, { text: 'two' } ], numberSub: 42 });
     t.end();
 });
 
