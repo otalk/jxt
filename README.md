@@ -1,11 +1,11 @@
 # jxt
 **JSON/XML Translation for the Browser**
 
-[![Build Status](https://travis-ci.org/legastero/jxt.png)](https://travis-ci.org/legastero/jxt)
-[![Dependency Status](https://david-dm.org/legastero/jxt.png)](https://david-dm.org/legastero/jxt)
-[![devDependency Status](https://david-dm.org/legastero/jxt/dev-status.png)](https://david-dm.org/legastero/jxt#info=devDependencies)
+[![Build Status](https://travis-ci.org/otalk/jxt.png)](https://travis-ci.org/otalk/jxt)
+[![Dependency Status](https://david-dm.org/otalk/jxt.png)](https://david-dm.org/otalk/jxt)
+[![devDependency Status](https://david-dm.org/otalk/jxt/dev-status.png)](https://david-dm.org/otalk/jxt#info=devDependencies)
 
-[![Browser Support](https://ci.testling.com/legastero/jxt.png)](https://ci.testling.com/legastero/jxt)
+[![Browser Support](https://ci.testling.com/otalk/jxt.png)](https://ci.testling.com/otalk/jxt)
 
 ## What is this?
 
