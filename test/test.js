@@ -68,6 +68,13 @@ var InitJXT = core.define({
 core.extend(JXT, SubJXT, 'multiSubs');
 
 
+test('get definition', function (t) {
+    var foundJXT = core.getDefinition('jxt', 'test');
+    t.equal(JXT, foundJXT);
+    t.end();
+});
+
+
 test('basic attribute', function (t) {
     var xml = helpers.createElement('test', 'test');
 
