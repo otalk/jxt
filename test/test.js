@@ -12,6 +12,9 @@ var JXT = core.define({
     element: 'jxt',
     topLevel: true,
     fields: {
+        fixed: {
+            value: 'fixedVal'
+        },
         attribute: types.attribute('attr'),
         boolAttribute: types.boolAttribute('boolattr'),
         boolSub: types.boolSub('test', 'boolsub'),
@@ -370,7 +373,7 @@ test('multiExtending', function (t) {
     xml.multiSubs = [{text: 'one'}, {text: 'two'}];
     var res = xml.toJSON();
 
-    t.deepEqual(res, { multiSubs: [ { text: 'one' }, { text: 'two' } ], numberSub: 42 });
+    t.deepEqual(res, { fixed: 'fixedVal', multiSubs: [ { text: 'one' }, { text: 'two' } ], numberSub: 42 });
     t.end();
 });
 
@@ -385,6 +388,7 @@ test('json', function (t) {
     var res = xml.toJSON();
 
     t.deepEqual(res, {
+        'fixed': 'fixedVal',
         'subJXT': {'text': 'bar'},
         'attribute': 'foo',
         'numberSub': 42,
@@ -395,6 +399,7 @@ test('json', function (t) {
     var res2 = xml2.toJSON();
 
     t.deepEqual(res2, {
+        'fixed': 'fixedVal',
         'subJXT': {'text': 'bar'},
         'attribute': 'foo',
         'numberSub': 42,
