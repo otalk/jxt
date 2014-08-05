@@ -33,7 +33,11 @@ First, we define the mapping between our XML and desired JSON:
 ```js
 var jxt = require('jxt');
 
-var Message = jxt.define({
+// Create a registry instance that will track our definitions and
+// extensions.
+var JXT = jxt.createRegistry();
+
+var Message = JXT.define({
     name: 'message',
     namespace: 'jabber:client',
     element: 'message',
@@ -63,7 +67,9 @@ console.log(msg.toString());
 Mappings can be extended:
 
 ```js
-var Ext = jxt.define({
+// JXT is our registry object
+
+var Ext = JXT.define({
     name: 'demoExt',
     namespace: 'jxt',
     element: 'demo',
@@ -72,7 +78,7 @@ var Ext = jxt.define({
     }
 });
 
-jxt.extend(Message, Ext);
+JXT.extend(Message, Ext);
 
 var msg = new Message();
 msg.demoExt.text = 'an extension';

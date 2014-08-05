@@ -2,22 +2,23 @@
 
 var test = require('tape');
 var jxt = require('../');
+var Registry = jxt.createRegistry();
 
 
-var Parent = jxt.define({
+var Parent = Registry.define({
     name: 'parent',
     namespace: 'parent',
     element: 'test'
 });
 
-var OtherParent = jxt.define({
+var OtherParent = Registry.define({
     name: 'otherparent',
     namespace: 'otherparent',
     element: 'test'
 });
 
 
-var Foo1 = jxt.define({
+var Foo1 = Registry.define({
     name: 'foo',
     namespace: 'test',
     element: 'foo-1',
@@ -26,7 +27,7 @@ var Foo1 = jxt.define({
     }
 });
 
-var Foo2 = jxt.define({
+var Foo2 = Registry.define({
     name: 'foo',
     namespace: 'test',
     element: 'foo-2',
@@ -36,9 +37,9 @@ var Foo2 = jxt.define({
 });
 
 
-jxt.extend(Parent, OtherParent);
-jxt.extend(Parent, Foo1);
-jxt.extend(OtherParent, Foo2);
+Registry.extend(Parent, OtherParent);
+Registry.extend(Parent, Foo1);
+Registry.extend(OtherParent, Foo2);
 
 
 test('JXT names are scoped to parent objects', function (t) {

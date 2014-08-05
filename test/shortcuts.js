@@ -2,9 +2,10 @@
 
 var test = require('tape');
 var jxt = require('../');
+var Registry = jxt.createRegistry();
 
 
-var Parent = jxt.define({
+var Parent = Registry.define({
     name: 'parent',
     namespace: 'test',
     element: 'parent',
@@ -14,7 +15,7 @@ var Parent = jxt.define({
 });
 
 
-var Child = jxt.define({
+var Child = Registry.define({
     name: 'child',
     namespace: 'test',
     element: 'child',
@@ -24,7 +25,7 @@ var Child = jxt.define({
 });
 
 
-jxt.extend(Parent, Child);
+Registry.extend(Parent, Child);
 
 
 test('Using subText = true', function (t) {

@@ -1,12 +1,12 @@
 'use strict';
 
 var test = require('tape');
-var core = require('../lib/core');
-var helpers = require('../lib/helpers');
-var types = require('../lib/types');
+var jxt = require('../');
+var Registry = jxt.createRegistry();
 
 
-var JXT = core.define({
+
+var JXT = Registry.define({
     name: 'jxtTest',
     namespace: 'test',
     element: 'jxt',
@@ -15,46 +15,46 @@ var JXT = core.define({
         fixed: {
             value: 'fixedVal'
         },
-        attribute: types.attribute('attr'),
-        boolAttribute: types.boolAttribute('boolattr'),
-        boolSub: types.boolSub('test', 'boolsub'),
-        subAttribute: types.subAttribute('test', 'subattr', 'attr'),
-        subText: types.subText('test', 'sub'),
-        multiSubText: types.multiSubText('test', 'sub'),
-        multiSubAttribute: types.multiSubAttribute('test', 'subattr', 'id'),
-        subLangText: types.subLangText('test', 'sublang'),
-        lang: types.langAttribute(),
-        numberAttribute: types.numberAttribute('numattr'),
-        numberSub: types.numberSub('test', 'numsub', false, 42),
-        floatAttribute: types.numberAttribute('floatattr', true),
-        floatSub: types.numberSub('test', 'floatsub', true),
-        dateAttribute: types.dateAttribute('dateattr'),
-        dateSub: types.dateSub('test', 'datesub'),
-        dateSubAttribute: types.dateSubAttribute('test', 'datesub', 'dateattr')
+        attribute: jxt.attribute('attr'),
+        boolAttribute: jxt.boolAttribute('boolattr'),
+        boolSub: jxt.boolSub('test', 'boolsub'),
+        subAttribute: jxt.subAttribute('test', 'subattr', 'attr'),
+        subText: jxt.subText('test', 'sub'),
+        multiSubText: jxt.multiSubText('test', 'sub'),
+        multiSubAttribute: jxt.multiSubAttribute('test', 'subattr', 'id'),
+        subLangText: jxt.subLangText('test', 'sublang'),
+        lang: jxt.langAttribute(),
+        numberAttribute: jxt.numberAttribute('numattr'),
+        numberSub: jxt.numberSub('test', 'numsub', false, 42),
+        floatAttribute: jxt.numberAttribute('floatattr', true),
+        floatSub: jxt.numberSub('test', 'floatsub', true),
+        dateAttribute: jxt.dateAttribute('dateattr'),
+        dateSub: jxt.dateSub('test', 'datesub'),
+        dateSubAttribute: jxt.dateSubAttribute('test', 'datesub', 'dateattr')
     }
 });
 
 
-var SubJXT = core.define({
+var SubJXT = Registry.define({
     name: 'subJXT',
     namespace: 'test',
     element: 'subjxt',
     fields: {
-        text: types.text()
+        text: jxt.text()
     }
 });
 
-var B64JXT = core.define({
+var B64JXT = Registry.define({
     name: 'b64JXT',
     namespace: 'test',
     element: 'b64',
     fields: {
-        text: types.text(),
-        b64Text: types.b64Text()
+        text: jxt.text(),
+        b64Text: jxt.b64Text()
     }
 });
 
-var InitJXT = core.define({
+var InitJXT = Registry.define({
     name: 'initJXT',
     namespace: 'test',
     element: 'init',
@@ -62,107 +62,107 @@ var InitJXT = core.define({
         this.result = this.test;
     },
     fields: {
-        test: types.attribute('test'),
-        result: types.attribute('result')
+        test: jxt.attribute('test'),
+        result: jxt.attribute('result')
     }
 });
 
 
-core.extend(JXT, SubJXT, 'multiSubs');
+Registry.extend(JXT, SubJXT, 'multiSubs');
 
 
 test('get definition', function (t) {
-    var foundJXT = core.getDefinition('jxt', 'test');
+    var foundJXT = Registry.getDefinition('jxt', 'test');
     t.equal(JXT, foundJXT);
     t.end();
 });
 
 
 test('basic attribute', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setAttribute(xml, 'attr', 'foo');
-    var res = helpers.getAttribute(xml, 'attr');
+    jxt.setAttribute(xml, 'attr', 'foo');
+    var res = jxt.getAttribute(xml, 'attr');
 
     t.equal(res, 'foo');
     t.end();
 });
 
 test('basic boolAttribute', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setBoolAttribute(xml, 'boolattr', true);
-    var res = helpers.getBoolAttribute(xml, 'boolattr');
+    jxt.setBoolAttribute(xml, 'boolattr', true);
+    var res = jxt.getBoolAttribute(xml, 'boolattr');
 
     t.equal(res, true);
     t.end();
 });
 
 test('basic subAttribute', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setSubAttribute(xml, 'test', 'sub', 'attr', 'foo');
-    var res = helpers.getSubAttribute(xml, 'test', 'sub', 'attr');
+    jxt.setSubAttribute(xml, 'test', 'sub', 'attr', 'foo');
+    var res = jxt.getSubAttribute(xml, 'test', 'sub', 'attr');
 
     t.equal(res, 'foo');
     t.end();
 });
 
 test('basic boolSub', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setBoolSub(xml, 'test', 'boolsub', true);
-    var res = helpers.getBoolSub(xml, 'test', 'boolsub');
+    jxt.setBoolSub(xml, 'test', 'boolsub', true);
+    var res = jxt.getBoolSub(xml, 'test', 'boolsub');
 
     t.equal(res, true);
     t.end();
 });
 
 test('basic text', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setText(xml, 'foo');
-    var res = helpers.getText(xml);
+    jxt.setText(xml, 'foo');
+    var res = jxt.getText(xml);
 
     t.equal(res, 'foo');
     t.end();
 });
 
 test('basic subText', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setSubText(xml, 'test', 'sub', 'foo');
-    var res = helpers.getSubText(xml, 'test', 'sub');
+    jxt.setSubText(xml, 'test', 'sub', 'foo');
+    var res = jxt.getSubText(xml, 'test', 'sub');
 
     t.equal(res, 'foo');
     t.end();
 });
 
 test('basic multiSubText', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setMultiSubText(xml, 'test', 'sub', ['foo', 'bar']);
-    var res = helpers.getMultiSubText(xml, 'test', 'sub');
+    jxt.setMultiSubText(xml, 'test', 'sub', ['foo', 'bar']);
+    var res = jxt.getMultiSubText(xml, 'test', 'sub');
 
     t.deepEqual(res, ['foo', 'bar']);
     t.end();
 });
 
 test('basic multiSubAttributes', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setMultiSubAttribute(xml, 'test', 'subattr', 'id', ['foo', 'bar']);
-    var res = helpers.getMultiSubAttribute(xml, 'test', 'subattr', 'id');
+    jxt.setMultiSubAttribute(xml, 'test', 'subattr', 'id', ['foo', 'bar']);
+    var res = jxt.getMultiSubAttribute(xml, 'test', 'subattr', 'id');
 
     t.deepEqual(res, ['foo', 'bar']);
     t.end();
 });
 
 test('basic subLangText', function (t) {
-    var xml = helpers.createElement('test', 'test');
+    var xml = jxt.createElement('test', 'test');
 
-    helpers.setSubLangText(xml, 'test', 'sub', {'en': 'foo', 'sv': 'bar'});
-    var res = helpers.getSubLangText(xml, 'test', 'sub');
+    jxt.setSubLangText(xml, 'test', 'sub', {'en': 'foo', 'sv': 'bar'});
+    var res = jxt.getSubLangText(xml, 'test', 'sub');
 
     t.deepEqual(res, {'en': 'foo', 'sv': 'bar'});
     t.end();
@@ -412,7 +412,7 @@ test('parse', function (t) {
     t.plan(1);
 
     var str = '<jxt xmlns="test" attr="passed" />';
-    var xml = core.parse(str, JXT);
+    var xml = Registry.parse(str);
 
     t.equal(xml.attribute, 'passed');
     t.end();
@@ -422,7 +422,7 @@ test('init', function (t) {
     t.plan(1);
 
     var str = '<init xmlns="test" test="passed" />';
-    var xml = core.parse(str, InitJXT);
+    var xml = Registry.parse(str, InitJXT);
 
     t.equal(xml.result, 'passed');
     t.end();
