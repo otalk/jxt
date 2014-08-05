@@ -94,6 +94,7 @@ JXT.prototype.define = function (opts) {
 
 // Expose methods on the required module itself
 
+
 JXT.createRegistry = function () {
     return new JXT();
 };
@@ -101,5 +102,14 @@ JXT.createRegistry = function () {
 extend(JXT, helpers);
 extend(JXT, types);
 
+// Compatibility shim for JXT 1.x
+
+var globalJXT = new JXT();
+
+JXT.define = globalJXT.define.bind(globalJXT);
+JXT.extend = globalJXT.extend.bind(globalJXT);
+JXT.add = globalJXT.add.bind(globalJXT);
+JXT.parse = globalJXT.parse.bind(globalJXT);
+JXT.build = globalJXT.build.bind(globalJXT);
 
 module.exports = JXT;
