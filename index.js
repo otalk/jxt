@@ -30,7 +30,7 @@ JXT.prototype.getExtensions = function (el, ns) {
 };
 
 JXT.prototype.build = function (xml) {
-    var JXTClass = this.LOOKUP[xml.namespaceURI + '|' + xml.localName];
+    var JXTClass = this._LOOKUP[xml.namespaceURI + '|' + xml.localName];
     if (JXTClass) {
         return new JXTClass(null, xml);
     }
