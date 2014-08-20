@@ -111,5 +111,11 @@ JXT.extend = globalJXT.extend.bind(globalJXT);
 JXT.add = globalJXT.add.bind(globalJXT);
 JXT.parse = globalJXT.parse.bind(globalJXT);
 JXT.build = globalJXT.build.bind(globalJXT);
+JXT.getExtensions = globalJXT.getExtensions.bind(globalJXT);
+JXT.getDefinition = globalJXT.getDefinition.bind(globalJXT);
+
+JXT.getGlobalJXT = function () {
+    return globalJXT;
+};
 
 module.exports = JXT;
