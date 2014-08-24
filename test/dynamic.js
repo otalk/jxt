@@ -9,6 +9,7 @@ var Child = Registry.define({
     name: 'child',
     namespace: 'test',
     element: 'childel',
+    tags: ['base-extension'],
     fields: {
         foo: jxt.attribute('foo', 'works')
     }
@@ -32,5 +33,14 @@ test('withDefinition', function (t) {
 
     t.ok(b.child);
     t.equals(b.child.foo, 'works');
+    t.end();
+});
+
+
+test('tagging', function (t) {
+    var defs = Registry.tagged('base-extension');
+
+    t.equals(defs.length, 1);
+    t.equals(defs[0], Child);
     t.end();
 });
