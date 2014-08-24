@@ -12,7 +12,8 @@ function JXT() {
     this._LOOKUP = {};
     this._LOOKUP_EXT = {};
     this._TAGS = {};
-    this._CB = {};
+    this._CB_DEFINITION = {};
+    this._CB_TAG = {};
 }
 
 JXT.prototype.use = function (init) {
@@ -33,15 +34,25 @@ JXT.prototype.getExtensions = function (el, ns) {
 
 JXT.prototype.withDefinition = function (el, ns, cb) {
     var name = ns + '|' + el;
-    if (!this._CB[name]) {
-        this._CB[name] = [];
+    if (!this._CB_DEFINITION[name]) {
+        this._CB_DEFINITION[name] = [];
     }
-    this._CB[name].push(cb);
-
+    this._CB_DEFINITION[name].push(cb);
 
     if (this._LOOKUP[name]) {
         cb(this._LOOKUP[name]);
     }
+};
+
+JXT.prototype.withTag = function (tag, cb) {
+    if (!this._CB_TAG[tag]) {
+        this._CB_TAG[tag] = [];
+    }
+    this._CB_TAG[tag].push(cb);
+
+    this.tagged(tag).forEach(function (stanza) {
+        cb(stanza);
+    });
 };
 
 JXT.prototype.tagged = function (tag) {
@@ -116,11 +127,19 @@ JXT.prototype.define = function (opts) {
         self.add(Stanza, fieldName, opts.fields[fieldName]);
     });
 
-    if (this._CB[name]) {
-        this._CB[name].forEach(function (handler) {
+    if (this._CB_DEFINITION[name]) {
+        this._CB_DEFINITION[name].forEach(function (handler) {
             handler(Stanza);
         });
     }
+
+    tags.forEach(function (tag) {
+        if (self._CB_TAG[tag]) {
+            self._CB_TAG[tag].forEach(function (handler) {
+                handler(Stanza);
+            });
+        }
+    });
 
     return Stanza;
 };
@@ -148,6 +167,7 @@ JXT.build = globalJXT.build.bind(globalJXT);
 JXT.getExtensions = globalJXT.getExtensions.bind(globalJXT);
 JXT.getDefinition = globalJXT.getDefinition.bind(globalJXT);
 JXT.withDefinition = globalJXT.withDefinition.bind(globalJXT);
+JXT.withTag = globalJXT.withTag.bind(globalJXT);
 JXT.tagged = globalJXT.tagged.bind(globalJXT);
 
 JXT.getGlobalJXT = function () {

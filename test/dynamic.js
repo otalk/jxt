@@ -44,3 +44,23 @@ test('tagging', function (t) {
     t.equals(defs[0], Child);
     t.end();
 });
+
+test('withTag', function (t) {
+    var tagged = [];
+
+    Registry.withTag('base-extension', function (Stanza) {
+        tagged.push(Stanza);
+    });
+
+    var Stanza = Registry.define({
+        name: 'stanza',
+        namespace: 'test',
+        element: 'stanza',
+        tags: ['base-extension']
+    });
+
+    t.equals(tagged.length, 2);
+    t.equals(tagged[0], Child);
+    t.equals(tagged[1], Stanza);
+    t.end();
+});
