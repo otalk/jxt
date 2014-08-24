@@ -11,6 +11,7 @@ var stanzaConstructor = require('./lib/stanza');
 function JXT() {
     this._LOOKUP = {};
     this._LOOKUP_EXT = {};
+    this._CB = {};
 }
 
 JXT.prototype.use = function (init) {
@@ -27,6 +28,19 @@ JXT.prototype.getDefinition = function (el, ns, required) {
 
 JXT.prototype.getExtensions = function (el, ns) {
     return this._LOOKUP_EXT[ns + '|' + el] || {};
+};
+
+JXT.prototype.withDefinition = function (el, ns, cb) {
+    var name = ns + '|' + el;
+    if (!this._CB[name]) {
+        this._CB[name] = [];
+    }
+    this._CB[name].push(cb);
+
+
+    if (this._LOOKUP[name]) {
+        cb(this._LOOKUP[name]);
+    }
 };
 
 JXT.prototype.build = function (xml) {
@@ -81,12 +95,19 @@ JXT.prototype.define = function (opts) {
     var ns = Stanza.prototype._NS;
     var el = Stanza.prototype._EL;
 
-    this._LOOKUP[ns + '|' + el] = Stanza;
+    var name = ns + '|' + el;
+    this._LOOKUP[name] = Stanza;
 
     var fieldNames = Object.keys(opts.fields || {});
     fieldNames.forEach(function (fieldName) {
         self.add(Stanza, fieldName, opts.fields[fieldName]);
     });
+
+    if (this._CB[name]) {
+        for (var i = 0, len = this._CB[name].length; i < len; i++) {
+            this._CB[name][i](Stanza);
+        }
+    }
 
     return Stanza;
 };
@@ -113,6 +134,7 @@ JXT.parse = globalJXT.parse.bind(globalJXT);
 JXT.build = globalJXT.build.bind(globalJXT);
 JXT.getExtensions = globalJXT.getExtensions.bind(globalJXT);
 JXT.getDefinition = globalJXT.getDefinition.bind(globalJXT);
+JXT.withDefinition = globalJXT.withDefinition.bind(globalJXT);
 
 JXT.getGlobalJXT = function () {
     return globalJXT;
