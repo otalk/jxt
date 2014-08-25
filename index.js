@@ -17,7 +17,11 @@ function JXT() {
 }
 
 JXT.prototype.use = function (init) {
-    return init(this);
+    if (!init.__JXT_LOADED) {
+        init(this);
+    }
+    init.__JXT_LOADED = true;
+    return this;
 };
 
 JXT.prototype.getDefinition = function (el, ns, required) {
