@@ -2,6 +2,7 @@
 
 var ltx = require('ltx');
 var extend = require('extend-object');
+var uuid = require('node-uuid');
 
 var types = require('./lib/types');
 var helpers = require('./lib/helpers');
@@ -14,13 +15,14 @@ function JXT() {
     this._TAGS = {};
     this._CB_DEFINITION = {};
     this._CB_TAG = {};
+    this._ID = uuid.v4();
 }
 
 JXT.prototype.use = function (init) {
-    if (!init.__JXT_LOADED) {
+    if (!init['__JXT_LOADED_' + this._ID]) {
         init(this);
     }
-    init.__JXT_LOADED = true;
+    init['__JXT_LOADED_' + this._ID] = true;
     return this;
 };
 

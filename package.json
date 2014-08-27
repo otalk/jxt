@@ -7,7 +7,8 @@
     "ltx": "^0.5.2",
     "atob": "^1.1.0",
     "btoa": "^1.1.1",
-    "extend-object": "^1.0.0"
+    "extend-object": "^1.0.0",
+    "node-uuid": "^1.4.1"
   },
   "devDependencies": {
     "browserify": "4.x",
