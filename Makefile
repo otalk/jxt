@@ -2,6 +2,8 @@ NAME = jxt
 STANDALONE = JXT
 MAIN = index.js
 
+SHELL = /bin/bash
+PATH := ./node_modules/.bin:$(PATH)
 LIB = $(shell find lib -name '*.js')
 BIN = ./node_modules/.bin
 
@@ -18,13 +20,13 @@ clean:
 	rm -rf build
 
 test: lint
-	node test/index.js | $(BIN)/tap-spec
+	node test/index.js | tap-spec
 
 lint:
-	$(BIN)/jshint .
+	jshint .
 
 audit:
-	$(BIN)/nsp package
+	nsp package
 
 
 # -- Build artifacts --------------------------------------------------
@@ -34,7 +36,7 @@ build/$(NAME).zip: build/$(NAME).bundle.js build/$(NAME).bundle.min.js
 
 build/$(NAME).bundle.js: $(MAIN) $(LIB)
 	mkdir -p build
-	$(BIN)/browserify --standalone $(STANDALONE) $(MAIN) > $@
+	browserify --standalone $(STANDALONE) $(MAIN) > $@
 
 build/$(NAME).bundle.min.js: build/$(NAME).bundle.js
-	$(BIN)/uglifyjs --screw-ie8 build/$(NAME).bundle.js > $@
+	uglifyjs --screw-ie8 build/$(NAME).bundle.js > $@
