@@ -1,9 +1,9 @@
-# jxt
-**JSON/XML Translation for the Browser**
+## jxt - JSON/XML Translation for the Browser
 
-[![Build Status](https://travis-ci.org/otalk/jxt.png)](https://travis-ci.org/otalk/jxt)
-[![Dependency Status](https://david-dm.org/otalk/jxt.png)](https://david-dm.org/otalk/jxt)
-[![devDependency Status](https://david-dm.org/otalk/jxt/dev-status.png)](https://david-dm.org/otalk/jxt#info=devDependencies)
+[![Version](http://img.shields.io/npm/v/jxt.svg)](https://npmjs.org/package/jxt)
+[![Downloads](http://img.shields.io/npm/dm/jxt.svg)](https://npmjs.org/package/jxt)
+[![Build Status](http://img.shields.io/travis/otalk/jxt.svg)](https://travis-ci.org/otalk/jxt)
+[![Dependency Status](http://img.shields.io/david/otalk/jxt.svg)](https://david-dm.org/otalk/jxt)
 
 [![Browser Support](https://ci.testling.com/otalk/jxt.png)](https://ci.testling.com/otalk/jxt)
 
@@ -21,7 +21,7 @@ $ npm install jxt
 ## Building bundled/minified version (for AMD, etc)
 
 ```sh
-$ grunt
+$ make build
 ```
 
 The bundled and minified files will be in the generated `build` directory.
