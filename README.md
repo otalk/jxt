@@ -31,21 +31,20 @@ The bundled and minified files will be in the generated `build` directory.
 First, we define the mapping between our XML and desired JSON:
 
 ```js
-var jxt = require('jxt');
-
 // Create a registry instance that will track our definitions and
 // extensions.
-var JXT = jxt.createRegistry();
+var jxt = require('jxt').createRegistry();
+var helpers = jxt.utils;
 
-var Message = JXT.define({
+var Message = jxt.define({
     name: 'message',
     namespace: 'jabber:client',
     element: 'message',
     fields: {
-        to: jxt.attribute('to'),
-        from: jxt.attribute('from'),
-        subject: jxt.subText('jabber:client', 'subject'),
-        body: jxt.subText('jabber:client', 'body')
+        to: helpers.attribute('to'),
+        from: helpers.attribute('from'),
+        subject: helpers.subText('jabber:client', 'subject'),
+        body: helpers.subText('jabber:client', 'body')
     }
 });
 ```
@@ -67,9 +66,9 @@ console.log(msg.toString());
 Mappings can be extended:
 
 ```js
-// JXT is our registry object
+// jxt is our registry object
 
-var Ext = JXT.define({
+var Ext = jxt.define({
     name: 'demoExt',
     namespace: 'jxt',
     element: 'demo',
@@ -78,7 +77,7 @@ var Ext = JXT.define({
     }
 });
 
-JXT.extend(Message, Ext);
+jxt.extend(Message, Ext);
 
 var msg = new Message();
 msg.demoExt.text = 'an extension';
@@ -99,6 +98,7 @@ console.log(msg.toString());
 - dateAttribute
 - dateSub
 - dateSubAttribute
+- enumSub
 - langAttribute
 - multiSubText
 - numberAttribute

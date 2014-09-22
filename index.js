@@ -16,6 +16,7 @@ function JXT() {
     this._CB_DEFINITION = {};
     this._CB_TAG = {};
     this._ID = uuid.v4();
+    this.utils = extend({}, types, helpers);
 }
 
 JXT.prototype.use = function (init) {
