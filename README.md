@@ -43,8 +43,8 @@ var Message = jxt.define({
     fields: {
         to: helpers.attribute('to'),
         from: helpers.attribute('from'),
-        subject: helpers.subText('jabber:client', 'subject'),
-        body: helpers.subText('jabber:client', 'body')
+        subject: helpers.textSub('jabber:client', 'subject'),
+        body: helpers.textSub('jabber:client', 'body')
     }
 });
 ```
@@ -100,13 +100,13 @@ console.log(msg.toString());
 - dateSubAttribute
 - enumSub
 - langAttribute
-- multiSubText
+- multiTextSub
 - numberAttribute
 - numberSub
 - numberSubAttribute
 - subAttribute
-- subLangText
-- subText
+- langTextSub
+- textSub
 - text
 
 ## License
