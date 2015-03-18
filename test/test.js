@@ -351,7 +351,7 @@ test('field b64Text', function (t) {
     var resPlain = xml.b64Text;
     var res64 = xml.text;
 
-    t.equal(resPlain, 'b64d text');
+    t.equal(resPlain.toString(), 'b64d text');
     t.equal(res64, 'YjY0ZCB0ZXh0');
     t.end();
 });

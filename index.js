@@ -1,8 +1,8 @@
 'use strict';
 
+var extend = require('lodash/object/extend');
+var uuid = require('uuid');
 var ltx = require('ltx');
-var extend = require('extend-object');
-var uuid = require('node-uuid');
 
 var types = require('./lib/types');
 var helpers = require('./lib/helpers');

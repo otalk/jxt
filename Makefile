@@ -1,11 +1,10 @@
+include node_modules/make-better/core.inc
+
 NAME = jxt
 STANDALONE = JXT
 MAIN = index.js
 
-SHELL = /bin/bash
-PATH := ./node_modules/.bin:$(PATH)
-LIB = $(shell find lib -name '*.js')
-BIN = ./node_modules/.bin
+LIB = $(call find_recursive,lib,*.js)
 
 
 # -- Tasks ------------------------------------------------------------
