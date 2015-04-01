@@ -1,6 +1,6 @@
 'use strict';
 
-var extend = require('lodash/object/extend');
+var extend = require('lodash.assign');
 var uuid = require('uuid');
 var ltx = require('ltx');
 
