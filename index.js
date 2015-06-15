@@ -67,25 +67,22 @@ JXT.prototype.tagged = function (tag) {
 };
 
 JXT.prototype.build = function (xml) {
-    var JXTClass = this._LOOKUP[xml.namespaceURI + '|' + xml.localName];
-    if (JXTClass) {
-        return new JXTClass(null, xml);
-    }
-};
-
-JXT.prototype.parse = function (str) {
-    var xml= ltx.parse(str);
-    if (xml.nodeType !== 1) {
-        return;
-    }
-
     var JXTClass = this.getDefinition(xml.localName, xml.namespaceURI);
     if (JXTClass) {
         return new JXTClass(null, xml);
     }
 };
 
-JXT.prototype.extend = function (ParentJXT, ChildJXT, multiName) {
+JXT.prototype.parse = function (str) {
+    var xml = ltx.parse(str);
+    if (xml.nodeType !== 1) {
+        return;
+    }
+
+    return this.build(xml);
+};
+
+JXT.prototype.extend = function (ParentJXT, ChildJXT, multiName, hideSingle) {
     var parentName = ParentJXT.prototype._NS + '|' + ParentJXT.prototype._EL;
     var name = ChildJXT.prototype._name;
     var qName = ChildJXT.prototype._NS + '|' + ChildJXT.prototype._EL;
@@ -99,7 +96,9 @@ JXT.prototype.extend = function (ParentJXT, ChildJXT, multiName) {
     }
     this._LOOKUP_EXT[parentName][name] = ChildJXT;
 
-    this.add(ParentJXT, name, types.extension(ChildJXT));
+    if (!multiName || (multiName && !hideSingle)) {
+        this.add(ParentJXT, name, types.extension(ChildJXT));
+    }
     if (multiName) {
         this.add(ParentJXT, multiName, types.multiExtension(ChildJXT));
     }
