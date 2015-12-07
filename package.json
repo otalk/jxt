@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "lodash.assign": "^3.0.0",
-    "ltx": "^2.0.1",
+    "ltx": "^2.2.0",
     "uuid": "^2.0.1"
   },
   "devDependencies": {

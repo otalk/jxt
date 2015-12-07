@@ -2,8 +2,6 @@
 
 var extend = require('lodash.assign');
 var uuid = require('uuid');
-var ltx = require('ltx');
-var DOMElement = require('ltx/lib/DOMElement');
 
 var types = require('./lib/types');
 var helpers = require('./lib/helpers');
@@ -75,13 +73,10 @@ JXT.prototype.build = function (xml) {
 };
 
 JXT.prototype.parse = function (str) {
-    var el = ltx.parse(str);
-    var xml = new DOMElement(el.getName());
-    extend(xml, el);
-    if (xml.nodeType !== 1) {
+    var xml = helpers.parse(str);
+    if (!xml) {
         return;
     }
-
     return this.build(xml);
 };
 
