@@ -373,7 +373,7 @@ test('multiExtending', function (t) {
     xml.multiSubs = [{text: 'one'}, {text: 'two'}];
     var res = xml.toJSON();
 
-    t.deepEqual(res, { fixed: 'fixedVal', multiSubs: [ { text: 'one' }, { text: 'two' } ], numberSub: 42 });
+    t.same(res.multiSubs, [ { text: 'one' }, { text: 'two' }]);
     t.end();
 });
 
@@ -387,24 +387,35 @@ test('json', function (t) {
 
     var res = xml.toJSON();
 
-    t.deepEqual(res, {
-        'fixed': 'fixedVal',
-        'subJXT': {'text': 'bar'},
-        'attribute': 'foo',
-        'numberSub': 42,
-        'multiSubs': [{'text': 'bar'}]
+    t.same(res, {
+        attribute: 'foo',
+        boolAttribute: false,
+        boolSub: false,
+        fixed: 'fixedVal',
+        lang: '',
+        multiSubs: [ { text: 'bar' } ],
+        numberSub: 42,
+        subAttribute: '',
+        subJXT: { text: 'bar' },
+        subText: ''
     });
 
     var xml2 = new JXT(res);
     var res2 = xml2.toJSON();
 
-    t.deepEqual(res2, {
-        'fixed': 'fixedVal',
-        'subJXT': {'text': 'bar'},
-        'attribute': 'foo',
-        'numberSub': 42,
-        'multiSubs': [{'text': 'bar'}]
+    t.same(res2, {
+        attribute: 'foo',
+        boolAttribute: false,
+        boolSub: false,
+        fixed: 'fixedVal',
+        lang: '',
+        multiSubs: [ { text: 'bar' } ],
+        numberSub: 42,
+        subAttribute: '',
+        subJXT: { text: 'bar' },
+        subText: ''
     });
+
     t.end();
 });
 
