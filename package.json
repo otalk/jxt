@@ -55,5 +55,6 @@
     "audit": "make audit",
     "build": "make build",
     "test": "make test"
-  }
+  },
+  "typings": "types.d.ts"
 }
