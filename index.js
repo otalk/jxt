@@ -19,10 +19,13 @@ function JXT() {
 }
 
 JXT.prototype.use = function (init) {
+    if (!init || typeof init !== 'function') {
+        return this;
+    }
     if (!init['__JXT_LOADED_' + this._ID]) {
         init(this);
+        init['__JXT_LOADED_' + this._ID] = true;
     }
-    init['__JXT_LOADED_' + this._ID] = true;
     return this;
 };
 
