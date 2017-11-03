@@ -6,7 +6,7 @@
   "dependencies": {
     "lodash.assign": "^3.0.0",
     "ltx": "^2.2.0",
-    "uuid": "^2.0.1"
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "browserify": "^9.0.0",
