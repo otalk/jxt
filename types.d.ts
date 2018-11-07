@@ -1,4 +1,3 @@
-
 export type StanzaClass = any;
 export type Stanza = any;
 export type XML = any;
@@ -14,20 +13,67 @@ export interface JXTUtils {
     setAttributeNS(xml: XML, namespace: string, name: string, value: any, force?: boolean): void;
     getBoolAttribute(xml: XML, name: string, defaultValue?: boolean): boolean;
     setBoolAttribute(xml: XML, name: string, value: boolean): void;
-    getSubAttribute(xml: XML, namespace: string, element: string, name: string, defaultValue?: string): string;
-    setSubAttribute(xml: XML, namespace: string, element: string, name: string, value: string): void;
-    getBoolSubAttribute(xml: XML, namespace: string, element: string, name: string, defaultValue?: boolean): boolean;
-    setBoolSubAttribute(xml: XML, namespace: string, element: string, name: string, value: boolean): void;
+    getSubAttribute(
+        xml: XML,
+        namespace: string,
+        element: string,
+        name: string,
+        defaultValue?: string
+    ): string;
+    setSubAttribute(
+        xml: XML,
+        namespace: string,
+        element: string,
+        name: string,
+        value: string
+    ): void;
+    getBoolSubAttribute(
+        xml: XML,
+        namespace: string,
+        element: string,
+        name: string,
+        defaultValue?: boolean
+    ): boolean;
+    setBoolSubAttribute(
+        xml: XML,
+        namespace: string,
+        element: string,
+        name: string,
+        value: boolean
+    ): void;
     getText(xml: XML): string;
     setText(xml: XML, text: string): void;
     getSubText(xml: XML, namespace: string, element: string, defaultValue?: string): string;
     setSubText(xml: XML, namespace: string, element: string, value: string): void;
-    getMultiSubText(xml: XML, namespace: string, element: string, extractor?: (xml: XML) => string): string[];
-    setMultiSubText(xml: XML, namespace: string, element: string, value: string | string[], builder?: (xml: XML, value: string) => void): void;
+    getMultiSubText(
+        xml: XML,
+        namespace: string,
+        element: string,
+        extractor?: (xml: XML) => string
+    ): string[];
+    setMultiSubText(
+        xml: XML,
+        namespace: string,
+        element: string,
+        value: string | string[],
+        builder?: (xml: XML, value: string) => void
+    ): void;
     getMultiSubAttribute(xml: XML, namespace: string, element: string, name: string): string[];
-    setMultiSubAttribute(xml: XML, namespace: string, element: string, name: string, value: string[]): void;
+    setMultiSubAttribute(
+        xml: XML,
+        namespace: string,
+        element: string,
+        name: string,
+        value: string[]
+    ): void;
     getSubLangText(xml: XML, namespace: string, element: string, defaultLang?: string): string;
-    setSubLangText(xml: XML, namespace: string, element: string, value: string, defaultLang?: string): void;
+    setSubLangText(
+        xml: XML,
+        namespace: string,
+        element: string,
+        value: string,
+        defaultLang?: string
+    ): void;
     getBoolSub(xml: XML, namespace: string, element: string): boolean;
     setBoolSub(xml: XML, namespace: string, element: string, value: boolean): void;
 
@@ -63,18 +109,29 @@ export interface Field {
     value?: any;
 }
 
-export class JXT {
+export default class JXT {
     public utils: JXTUtils;
+
+    public static createRegistry(): JXT;
 
     public use(init: (jxt: JXT) => void): void;
     public getDefinition(element: string, namespace: string, required?: boolean): StanzaClass;
     public getExtensions(element: string, namespace: string): StanzaClass[];
-    public withDefinition(element: string, namespace: string, handler: (stanza: Stanza) => void): void;
+    public withDefinition(
+        element: string,
+        namespace: string,
+        handler: (stanza: Stanza) => void
+    ): void;
     public withTag(tag: string, handler: (stanza: Stanza) => void): void;
     public tagged(tag: string): Stanza[];
     public build(xml: XML): Stanza;
     public parse(str: string): XML;
-    public extend(parentJXT: StanzaClass, childJXT: StanzaClass, multiName?: string, hideSingle?: boolean): void;
+    public extend(
+        parentJXT: StanzaClass,
+        childJXT: StanzaClass,
+        multiName?: string,
+        hideSingle?: boolean
+    ): void;
     public add(parentJXT: StanzaClass, fieldName: string, field: any): void;
     public define(opts: {
         name: string;

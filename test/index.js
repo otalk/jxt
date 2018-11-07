@@ -1,4 +1,4 @@
-require('./test');
-require('./scoping');
-require('./shortcuts');
-require('./dynamic');
+import './test';
+import './scoping';
+import './shortcuts';
+import './dynamic';

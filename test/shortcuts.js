@@ -1,11 +1,9 @@
-'use strict';
+import test from 'tape';
+import jxt from '../src';
 
-var test = require('tape');
-var jxt = require('../');
-var Registry = jxt.createRegistry();
+const Registry = jxt.createRegistry();
 
-
-var Parent = Registry.define({
+const Parent = Registry.define({
     name: 'parent',
     namespace: 'test',
     element: 'parent',
@@ -14,8 +12,7 @@ var Parent = Registry.define({
     }
 });
 
-
-var Child = Registry.define({
+const Child = Registry.define({
     name: 'child',
     namespace: 'test',
     element: 'child',
@@ -24,12 +21,10 @@ var Child = Registry.define({
     }
 });
 
-
 Registry.extend(Parent, Child);
 
-
-test('Using subText = true', function (t) {
-    var xml = new Parent({
+test('Using subText = true', function(t) {
+    const xml = new Parent({
         subText: true
     });
 
@@ -38,8 +33,8 @@ test('Using subText = true', function (t) {
     t.end();
 });
 
-test('Using childExt = true', function (t) {
-    var xml = new Parent({
+test('Using childExt = true', function(t) {
+    const xml = new Parent({
         child: true
     });
 

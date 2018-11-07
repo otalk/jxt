@@ -1,12 +1,5 @@
 ## jxt - JSON/XML Translation for the Browser
 
-[![Version](http://img.shields.io/npm/v/jxt.svg)](https://npmjs.org/package/jxt)
-[![Downloads](http://img.shields.io/npm/dm/jxt.svg)](https://npmjs.org/package/jxt)
-[![Build Status](http://img.shields.io/travis/otalk/jxt.svg)](https://travis-ci.org/otalk/jxt)
-[![Dependency Status](http://img.shields.io/david/otalk/jxt.svg)](https://david-dm.org/otalk/jxt)
-
-[![Browser Support](https://ci.testling.com/otalk/jxt.png)](https://ci.testling.com/otalk/jxt)
-
 ## What is this?
 
 A basic framework for translating XML to dev-friendly JSON and back again, and can be used
@@ -90,28 +83,28 @@ console.log(msg.toString());
 
 ## Predefined Field Types
 
-- attribute
-- b64Text
-- boolAttribute
-- boolSub
-- boolSubAttribute
-- dateAttribute
-- dateSub
-- dateSubAttribute
-- enumSub
-- langAttribute
-- multiTextSub
-- numberAttribute
-- numberSub
-- numberSubAttribute
-- subAttribute
-- langTextSub
-- textSub
-- text
+-   attribute
+-   b64Text
+-   boolAttribute
+-   boolSub
+-   boolSubAttribute
+-   dateAttribute
+-   dateSub
+-   dateSubAttribute
+-   enumSub
+-   langAttribute
+-   multiTextSub
+-   numberAttribute
+-   numberSub
+-   numberSubAttribute
+-   subAttribute
+-   langTextSub
+-   textSub
+-   text
 
 ## License
 
-MIT
+[MIT](./LICENSE)
 
 ## Created By
 

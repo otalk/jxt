@@ -1,24 +1,21 @@
-'use strict';
+import test from 'tape';
+import jxt from '../src';
 
-var test = require('tape');
-var jxt = require('../');
-var Registry = jxt.createRegistry();
+const Registry = jxt.createRegistry();
 
-
-var Parent = Registry.define({
+const Parent = Registry.define({
     name: 'parent',
     namespace: 'parent',
     element: 'test'
 });
 
-var OtherParent = Registry.define({
+const OtherParent = Registry.define({
     name: 'otherparent',
     namespace: 'otherparent',
     element: 'test'
 });
 
-
-var Foo1 = Registry.define({
+const Foo1 = Registry.define({
     name: 'foo',
     namespace: 'test',
     element: 'foo-1',
@@ -27,7 +24,7 @@ var Foo1 = Registry.define({
     }
 });
 
-var Foo2 = Registry.define({
+const Foo2 = Registry.define({
     name: 'foo',
     namespace: 'test',
     element: 'foo-2',
@@ -36,14 +33,12 @@ var Foo2 = Registry.define({
     }
 });
 
-
 Registry.extend(Parent, OtherParent);
 Registry.extend(Parent, Foo1);
 Registry.extend(OtherParent, Foo2);
 
-
-test('JXT names are scoped to parent objects', function (t) {
-    var xml = new Parent({
+test('JXT names are scoped to parent objects', function(t) {
+    const xml = new Parent({
         foo: {
             val1: 'foo-1'
         },

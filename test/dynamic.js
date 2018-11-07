@@ -1,11 +1,10 @@
-'use strict';
+const test = require('tape');
 
-var test = require('tape');
-var jxt = require('../');
-var Registry = jxt.createRegistry();
+import jxt from '../src';
 
+const Registry = jxt.createRegistry();
 
-var Child = Registry.define({
+const Child = Registry.define({
     name: 'child',
     namespace: 'test',
     element: 'childel',
@@ -16,43 +15,40 @@ var Child = Registry.define({
 });
 
 // Link Child to Base, before we define Base
-Registry.withDefinition('baseel', 'test', function (Base) {
+Registry.withDefinition('baseel', 'test', function(Base) {
     Registry.extend(Base, Child);
 });
 
-
-
-test('withDefinition', function (t) {
-    var Base = Registry.define({
+test('withDefinition', function(t) {
+    const Base = Registry.define({
         name: 'base',
         namespace: 'test',
         element: 'baseel'
     });
 
-    var b = new Base();
+    const b = new Base();
 
     t.ok(b.child);
     t.equals(b.child.foo, 'works');
     t.end();
 });
 
-
-test('tagging', function (t) {
-    var defs = Registry.tagged('base-extension');
+test('tagging', function(t) {
+    const defs = Registry.tagged('base-extension');
 
     t.equals(defs.length, 1);
     t.equals(defs[0], Child);
     t.end();
 });
 
-test('withTag', function (t) {
-    var tagged = [];
+test('withTag', function(t) {
+    const tagged = [];
 
-    Registry.withTag('base-extension', function (Stanza) {
+    Registry.withTag('base-extension', function(Stanza) {
         tagged.push(Stanza);
     });
 
-    var Stanza = Registry.define({
+    const Stanza = Registry.define({
         name: 'stanza',
         namespace: 'test',
         element: 'stanza',
