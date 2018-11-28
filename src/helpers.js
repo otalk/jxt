@@ -187,10 +187,10 @@ export function setMultiSubText(xml, NS, element, value, builder) {
     let values = [];
     builder =
         builder ||
-        function(value) {
-            if (value) {
+        function(val) {
+            if (val) {
                 const sub = createElement(NS, element, xml.namespaceURI);
-                sub.textContent = value;
+                sub.textContent = val;
                 xml.appendChild(sub);
             }
         };
@@ -200,7 +200,8 @@ export function setMultiSubText(xml, NS, element, value, builder) {
         values = value;
     }
 
-    let i, len;
+    let i;
+    let len;
     for (i = 0, len = subs.length; i < len; i++) {
         xml.removeChild(subs[i]);
     }
@@ -230,7 +231,8 @@ export function getSubLangText(xml, NS, element, defaultLang) {
         return {};
     }
 
-    let lang, sub;
+    let lang;
+    let sub;
     const results = {};
     const langs = [];
 
@@ -245,7 +247,8 @@ export function getSubLangText(xml, NS, element, defaultLang) {
 }
 
 export function setSubLangText(xml, NS, element, value, defaultLang) {
-    let sub, lang;
+    let sub;
+    let lang;
     const subs = find(xml, NS, element);
     if (subs.length) {
         for (let i = 0; i < subs.length; i++) {

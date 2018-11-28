@@ -270,7 +270,8 @@ export function multiExtension(ChildJXT) {
             const self = this;
             const existing = find(this.xml, ChildJXT.prototype._NS, ChildJXT.prototype._EL);
 
-            let i, len;
+            let i;
+            let len;
             for (i = 0, len = existing.length; i < len; i++) {
                 self.xml.removeChild(existing[i]);
             }

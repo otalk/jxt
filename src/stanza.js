@@ -57,12 +57,13 @@ export default function(JXT, opts) {
             let prop;
             const result = {};
 
-            for (prop in this._extensions) {
+            for (prop of Object.keys(this._extensions)) {
                 if (this._extensions[prop].toJSON && prop[0] !== '_') {
                     result[prop] = this._extensions[prop].toJSON();
                 }
             }
 
+            // tslint:disable forin
             for (prop in this) {
                 const allowedName = !EXCLUDE[prop] && prop[0] !== '_';
                 const isExtensionName = JXT.getExtensions(this._EL, this._NS)[prop];
