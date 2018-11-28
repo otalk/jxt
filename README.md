@@ -11,14 +11,6 @@ both in the browser and in node.
 $ npm install jxt
 ```
 
-## Building bundled/minified version (for AMD, etc)
-
-```sh
-$ make build
-```
-
-The bundled and minified files will be in the generated `build` directory.
-
 ## How to use it
 
 First, we define the mapping between our XML and desired JSON:
