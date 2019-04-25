@@ -1,10 +1,10 @@
-const ltx = require('ltx');
+const ltxParse = require('ltx/lib/parse');
 const DOMElement = require('ltx/lib/DOMElement');
 
 export const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 
 export function parse(str) {
-    const xml = ltx.parse(str, {
+    const xml = ltxParse(str, {
         Element: DOMElement
     });
     if (xml.nodeType !== 1) {
