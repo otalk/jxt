@@ -1,7 +1,7 @@
 {
     "name": "jxt",
     "description": "JSON/XML Translator. Set/retrieve data from XML just like working with a dictionary.",
-    "version": "4.0.1",
+    "version": "4.0.2",
     "bugs": "https://github.com/otalk/jxt/issues",
     "contributors": [
         "Lance Stout <lance@andyet.net>"
