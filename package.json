@@ -8,8 +8,7 @@
     ],
     "dependencies": {
         "ltx": "^2.2.0",
-        "tslib": "^1.9.3",
-        "uuid": "^3.0.0"
+        "tslib": "^1.9.3"
     },
     "devDependencies": {
         "husky": "^1.1.3",

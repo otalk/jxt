@@ -1,5 +1,3 @@
-import * as uuid from 'uuid';
-
 import * as types from './types';
 import * as helpers from './helpers';
 import StanzaConstructor from './stanza';
@@ -11,7 +9,7 @@ class JXT {
         this._TAGS = {};
         this._CB_DEFINITION = {};
         this._CB_TAG = {};
-        this._ID = uuid.v4();
+        this._ID = Symbol('JXT');
         this.utils = {
             ...types,
             ...helpers
@@ -22,9 +20,9 @@ class JXT {
         if (!init || typeof init !== 'function') {
             return this;
         }
-        if (!init['__JXT_LOADED_' + this._ID]) {
+        if (!init[this._ID]) {
             init(this);
-            init['__JXT_LOADED_' + this._ID] = true;
+            init[this._ID] = true;
         }
         return this;
     }
